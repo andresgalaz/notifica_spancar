@@ -37,7 +37,7 @@ public class Principal {
 
         // Proceso notificaciones a clientes que están a punto de facturar
         try {
-            NotifAFacturar notif = new NotifAFacturar( hlp.getConnection() );
+            AFacturar notif = new AFacturar( hlp.getConnection() );
             notif.procesa();
             hlp.getConnection().commit();
         } catch (Exception e) {
@@ -59,7 +59,7 @@ public class Principal {
 
         // Proceso notificaciones de factura
         try {
-            NotifFactura notif = new NotifFactura( hlp.getConnection(), mail );
+            FacturacionAdmin notif = new FacturacionAdmin( hlp.getConnection(), mail );
             notif.procesa();
             hlp.getConnection().commit();
         } catch (Exception e) {

@@ -14,12 +14,24 @@ import org.apache.log4j.Logger;
 import prg.glz.FrameworkException;
 import snapCar.net.CallWsMail;
 
-public class NotifAFacturar {
-    private static Logger    logger         = Logger.getLogger( NotifAFacturar.class );
+/**
+ * <p>
+ * Envía mensajes a los clientes dos dís antes del cierre de facturación. Discrimina los que tienen mas de 5 días sin
+ * sincronizar.
+ * </p>
+ * <p>
+ * Utiliza la tabla temporal wMemoryCierreTransf que se crea con el procedimiento: prControlCierreTransferenciaInicio
+ * </p>
+ * 
+ * @author agalaz
+ *
+ */
+public class AFacturar {
+    private static Logger    logger         = Logger.getLogger( AFacturar.class );
     private Connection       cnx;
     private static final int DIAS_AL_CIERRE = 2;
 
-    public NotifAFacturar(Connection cnx) {
+    public AFacturar(Connection cnx) {
         this.cnx = cnx;
     }
 

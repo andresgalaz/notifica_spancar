@@ -24,12 +24,20 @@ import prg.util.cnv.ConvertList;
 import snapCar.mail.Mail;
 import snapCar.notif.config.Parametro;
 
-public class NotifFactura {
-    private static Logger logger = Logger.getLogger( NotifFactura.class );
+/**
+ * <p>
+ * Envia mensajes al área Administrativa informando las facturaciones realizadas
+ * </p>
+ * 
+ * @author agalaz
+ *
+ */
+public class FacturacionAdmin {
+    private static Logger logger = Logger.getLogger( FacturacionAdmin.class );
     private Connection    cnx;
     private Mail          mail;
 
-    public NotifFactura(Connection cnx, Mail mail) {
+    public FacturacionAdmin(Connection cnx, Mail mail) {
         this.cnx = cnx;
         this.mail = mail;
     }
