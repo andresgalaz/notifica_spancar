@@ -1,0 +1,5 @@
+1.*
+bin/
+log/
+notifica*.jar
+notifica*lib/

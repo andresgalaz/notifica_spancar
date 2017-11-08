@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-7-jdk"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.23.jar"/>
+	<classpathentry kind="lib" path="lib/utilFrmwk_4.0.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.9.9.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-20041127.091804.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar" sourcepath="/home/agalaz/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/mail-1.4.7.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
