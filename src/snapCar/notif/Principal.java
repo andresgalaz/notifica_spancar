@@ -1,10 +1,6 @@
 package snapCar.notif;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.mail.NoSuchProviderException;
 
@@ -14,43 +10,14 @@ import prg.glz.FrameworkException;
 import prg.glz.data.entity.TConexionDB;
 import prg.util.db.hlp.ConexionHelper;
 import snapCar.mail.Mail;
-import snapCar.net.CallMandril;
 import snapCar.notif.config.Parametro;
 
 public class Principal {
     private static Logger logger = Logger.getLogger( Principal.class );
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void main(String[] args) throws FrameworkException {
-        CallMandril mandril = new CallMandril();
-        List<Map> lisTo = new ArrayList<Map>();
-        Map mTo = new HashMap();
-        mTo.put( "email", "andres.galaz@snapcar.com.ar" );
-        mTo.put( "name", "David Raskovan" );
-        mTo.put( "type", "to" );
-
-        lisTo.add( mTo );
-
-        Map mVars = new HashMap();
-        mVars.put( "cNombre", "Javier 220" );
-        mVars.put( "nDiasNoSincro", "30" );
-        mVars.put( "dInicio", "15/09/2017" );
-        mVars.put( "dFin", "15/10/2017" );
-
-        String cResult = mandril.ejecuta( "a_facturar_01", "factura_1", lisTo, mVars );
-        System.out.println( cResult );
-
         org.apache.log4j.PropertyConfigurator.configure( "log4j.properties" );
         logger.info( "Inicio del proceso" );
-
-        // Se instancia aquí para verificar
-        Mail mail = null;
-        try {
-            mail = new Mail();
-        } catch (NoSuchProviderException e) {
-            logger.error( "No está habilitado el servidor de MAIL", e );
-            return;
-        }
 
         // Conecta a la base de datos
         TConexionDB cnx = new TConexionDB();
@@ -68,7 +35,29 @@ public class Principal {
             return;
         }
 
-        // Proceso las notificaciones de factura
+        // Proceso notificaciones a clientes que están a punto de facturar
+        try {
+            NotifAFacturar notif = new NotifAFacturar( hlp.getConnection() );
+            notif.procesa();
+            hlp.getConnection().commit();
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            logger.error( "Al procesar notificaciones de clientes a facturar", e );
+        }
+
+        // Se instancia aquí para verificar
+        Mail mail = null;
+        try {
+            mail = new Mail();
+        } catch (NoSuchProviderException e) {
+            logger.error( "No está habilitado el servidor de MAIL", e );
+            return;
+        }
+
+        // Proceso notificaciones de factura
         try {
             NotifFactura notif = new NotifFactura( hlp.getConnection(), mail );
             notif.procesa();

@@ -13,23 +13,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertJSON;
+import prg.util.cnv.ConvertMap;
 import snapCar.notif.config.Parametro;
 
-public class CallMandril {
+/**
+ * <p>
+ * Envía Mails utilizando un Webservice REST, el servidor utilizado actualmente es Mandril de MailChimp
+ * <p>
+ * 
+ * @author agalaz
+ *
+ */
+public class CallWsMail {
+    private static Logger logger = Logger.getLogger( CallWsMail.class );
 
     @SuppressWarnings("rawtypes")
-    private Map    mapData;
-    private String wsMailUrl;
+    private Map           mapData;
+    private String        wsMailUrl;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public CallMandril() {
+    public CallWsMail() {
         wsMailUrl = Parametro.get( "ws_mail_url" );
         String wsMailKey = Parametro.get( "ws_mail_key" );
         String wsMailReplyTo = Parametro.get( "ws_mail_reply_to" );
         String wsMailBccAddress = Parametro.get( "ws_mail_bcc_address" );
-        
+
         if (wsMailUrl == null || wsMailKey == null || wsMailReplyTo == null)
             throw new RuntimeException( "Faltan parámetros de definción del servicio" );
 
@@ -51,7 +63,7 @@ public class CallMandril {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public String ejecuta(String cTemplate, String cTag, List<Map> lisTo, Map mVars) throws FrameworkException {
+    public void ejecuta(String cTemplate, String cTag, List<Map> lisTo, Map mVars) throws FrameworkException {
         // Prepara URL
         try {
             URL url = new URL( wsMailUrl );
@@ -79,7 +91,8 @@ public class CallMandril {
             conn.setDoOutput( true );
             OutputStream oFOut = conn.getOutputStream();
             String cData = ConvertJSON.MapToString( this.mapData );
-            System.out.println( cData );
+            logger.debug( cData );
+
             oFOut.write( cData.getBytes() );
             oFOut.close();
 
@@ -99,7 +112,23 @@ public class CallMandril {
             }
             oFIn.close();
             conn.disconnect();
-            return sb.toString();
+            Map mError = null;
+            try {
+                // Si es un objeto Json (no un Array), es por que es un error
+                // {
+                // "status": "error",
+                // "code": 5,
+                // "name": "Unknown_Template",
+                // "message": "No such template \"a_facturar_01x\""
+                // }
+                mError = ConvertMap.fromJsonString( sb.toString() );
+            } catch (Exception e) {
+                // Es porque no es un objeto sino una lista, lo cual indica que está ok
+            }
+            if (mError == null)
+                logger.debug( "Se envió mensaje correctamente" );
+            else
+                throw new FrameworkException( mError.get( "name" ) + "\n" + mError.get( "message" ) );
         } catch (MalformedURLException e) {
             throw new FrameworkException( "La URL del servidor API es errónea" );
         } catch (IOException e) {
@@ -107,4 +136,14 @@ public class CallMandril {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List<Map> createAddressTo(String cNombre, String cEmail) {
+        Map m = new HashMap();
+        m.put( "email", cEmail );
+        m.put( "name", cNombre );
+        m.put( "type", "to" );
+        List<Map> lisTo = new ArrayList<Map>();
+        lisTo.add( m );
+        return lisTo;
+    }
 }

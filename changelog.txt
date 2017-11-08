@@ -1,0 +1,7 @@
+= Pendiente
+ * Agregar los mensajes que faltan
+  
+= v00001 =
+@ 11/08/2017
+ * Se crea GIT
+ * Se agrega mensajes a_facturar_01 y a_facturar_02 con Mandril
