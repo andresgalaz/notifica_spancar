@@ -65,6 +65,8 @@ public class Parametro {
             logger.info( "ws_mail_reply_to    :" + prop.getProperty( "ws_mail_reply_to" ) );
             logger.info( "ws_mail_bcc_address :" + prop.getProperty( "ws_mail_bcc_address" ) );
 
+            logger.info( "mail_test :" + prop.getProperty( "mail_test" ) );
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {

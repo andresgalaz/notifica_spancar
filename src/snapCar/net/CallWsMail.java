@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertJSON;
 import prg.util.cnv.ConvertMap;
+import snapCar.notif.config.Ambiente;
 import snapCar.notif.config.Parametro;
 
 /**
@@ -139,7 +140,9 @@ public class CallWsMail {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Map> createAddressTo(String cNombre, String cEmail) {
         Map m = new HashMap();
-        m.put( "email", cEmail );
+        // Ambiente.fixSendEnail cambia el mail de destino para evitar accidentes de envios en ambientes que no sean
+        // producción
+        m.put( "email", Ambiente.fixSendEnail( cEmail ) );
         m.put( "name", cNombre );
         m.put( "type", "to" );
         List<Map> lisTo = new ArrayList<Map>();

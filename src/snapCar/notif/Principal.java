@@ -10,6 +10,7 @@ import prg.glz.FrameworkException;
 import prg.glz.data.entity.TConexionDB;
 import prg.util.db.hlp.ConexionHelper;
 import snapCar.mail.Mail;
+import snapCar.notif.config.Ambiente;
 import snapCar.notif.config.Parametro;
 
 public class Principal {
@@ -34,6 +35,7 @@ public class Principal {
             logger.error( "No se puso conectar a la base de datos:" + cnx.getcUrl() );
             return;
         }
+        logger.info( "Ambiente:" + Ambiente.getNombre() );
 
         // Proceso notificaciones a clientes que están a punto de facturar
         try {
