@@ -55,7 +55,8 @@ public class CierreFactura {
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE DATEDIFF(w.dProximoCierre,NOW()) + CASE WHEN TIMESTAMPDIFF(MONTH,w.dIniVigencia, w.dProximoCierre) <= 1 THEN DAY(LAST_DAY(NOW())) ELSE 0 END = ? \n"
-                    + " AND   w.cPoliza is not null \n";
+                    + " AND   w.cPoliza is not null \n"
+                    + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
             psSql.setInt( 1, DIAS_AL_CIERRE );
             ResultSet rsNotif = psSql.executeQuery();

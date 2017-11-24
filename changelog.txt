@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
   
+= v00002 =
+@ 24/11/2017
+ * Se controla bVigente='1' en tVehiculo
+ 
 = v00001 =
 @ 11/08/2017
  * Se crea GIT
