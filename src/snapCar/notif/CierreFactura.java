@@ -5,13 +5,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
+import prg.util.cnv.ConvertDate;
+import prg.util.cnv.ConvertException;
 import snapCar.net.CallWsMail;
 
 /**
@@ -29,7 +34,8 @@ import snapCar.net.CallWsMail;
 public class CierreFactura {
     private static Logger    logger         = Logger.getLogger( CierreFactura.class );
     private Connection       cnx;
-    private static final int DIAS_AL_CIERRE = 2;
+    // Es negavtivo porque se buscan los que ya cerraron, justo ayer
+    private static final int DIAS_AL_CIERRE = -1;
 
     public CierreFactura(Connection cnx) {
         this.cnx = cnx;
@@ -37,24 +43,27 @@ public class CierreFactura {
 
     @SuppressWarnings({ "rawtypes" })
     public void procesa() {
+        Locale.setDefault( new Locale( "es", "ES" ) );
+        SimpleDateFormat fmtLargo = new SimpleDateFormat( "EEEE d 'de' MMMM 'de' YYYY " );
         try {
             {
-                // Crea tabla temporal wMemoryCierreTransf
-                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicio()}" );
+                // Crea tabla temporal wMemoryCierreTransf, se usa el parámetro cero porque se quiere los que ya
+                // vencieron, no los que van a vencer
+                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicioDef(0)}" );
                 call.execute();
                 call.close();
             }
             String cSql = "SELECT w.cPatente \n"
-                    + ", DATE_FORMAT(w.dProximoCierre + INTERVAL -1 MONTH, '%d/%m/%Y')    dInicio \n"
-                    + ", DATE_FORMAT(w.dProximoCierre                    , '%d/%m/%Y')    dFin \n"
-                    + ", u.cEmail, u.cNombre                                              cNombre \n"
-                    + ", DATEDIFF( DATE(NOW()) \n"
-                    + "          , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
-                    + "                    , IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "                    , IFNULL(DATE( w.tUltControl      ), '0000-00-00')) ) nDiasNoSincro \n"
+                    + "     , DATE_FORMAT(w.dProximoCierre + INTERVAL -1 MONTH, '%d/%m/%Y')    dInicio \n"
+                    + "     , DATE_FORMAT(w.dProximoCierre                    , '%d/%m/%Y')    dFin \n"
+                    + "     , u.cEmail, u.cNombre                                              cNombre \n"
+                    + "     , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
+                    + "               , IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
+                    + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dFecSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    + " WHERE DATEDIFF(w.dProximoCierre,NOW()) + CASE WHEN TIMESTAMPDIFF(MONTH,w.dIniVigencia, w.dProximoCierre) <= 1 THEN DAY(LAST_DAY(NOW())) ELSE 0 END = ? \n"
+                    + " WHERE nDiasAlCierre = ?\n"
+                    + " AND   nDiasNoSincro = 0\n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
@@ -68,22 +77,18 @@ public class CierreFactura {
                 String cEmail = rsNotif.getString( "cEmail" );
                 String cNombre = rsNotif.getString( "cNombre" );
                 String cPrimerNombre = cNombre.split( " " )[0];
+                Date dSincro = ConvertDate.toDate( rsNotif.getDate( "dSincro" ) );
 
                 List<Map> to = callMail.createAddressTo( cNombre, cEmail );
 
                 Map<String, String> mReg = new HashMap<String, String>();
                 mReg.put( "cPatente", cPatente );
-                mReg.put( "dInicio", rsNotif.getString( "dInicio" ) );
-                mReg.put( "dFin", rsNotif.getString( "dFin" ) );
+                mReg.put( "cFecSincro", fmtLargo.format( dSincro ) );
                 mReg.put( "cNombre", cPrimerNombre );
                 mReg.put( "nDiasNoSincro", String.valueOf( nDiasNoSincro ) );
 
                 try {
-                    if (nDiasNoSincro >= 5) {
-                        callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
-                    } else {
-                        callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
-                    }
+                    callMail.ejecuta( "cerro_periodo_factura", "cerro_periodo", to, mReg );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }
@@ -92,6 +97,9 @@ public class CierreFactura {
             psSql.close();
         } catch (SQLException e) {
             logger.error( "Al lee notificaciones tipo 2", e );
+            throw new RuntimeException( e );
+        } catch (ConvertException e) {
+            logger.error( "Al convertir fecha de sincronización", e );
             throw new RuntimeException( e );
         }
     }

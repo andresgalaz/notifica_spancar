@@ -42,31 +42,27 @@ public class AFacturar {
 
     @SuppressWarnings({ "rawtypes" })
     public void procesa() {
-        Locale.setDefault( new Locale ( "es" , "ES" ) );
+        Locale.setDefault( new Locale( "es", "ES" ) );
         SimpleDateFormat fmtLargo = new SimpleDateFormat( "EEEE d 'de' MMMM 'de' YYYY " );
         SimpleDateFormat fmtDia = new SimpleDateFormat( "EEEE" );
         SimpleDateFormat fmtSimple = new SimpleDateFormat( "dd/MM/YYY" );
-        
+
         try {
             {
-                // Crea tabla temporal wMemoryCierreTransf
-                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicio()}" );
+                // Crea tabla temporal wMemoryCierreTransf, se usa el parámetro 1, indicando que se quiere los que van a
+                // vencer
+                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicioDef(1)}" );
                 call.execute();
                 call.close();
             }
             String cSql = "SELECT w.cPatente \n"
-                    // + ", DATE_FORMAT(w.dProximoCierre + INTERVAL -1 MONTH, '%d/%m/%Y')    dInicio \n"
-                    // + ", DATE_FORMAT(w.dProximoCierre                    , '%d/%m/%Y')    dFin \n"
                     + ", w.dProximoCierre + INTERVAL -1 MONTH   dInicio \n"
                     + ", w.dProximoCierre                       dFin \n"
-                    + ", u.cEmail, u.cNombre                    cNombre \n"
-                    + ", DATEDIFF( DATE(NOW()) \n"
-                    + "          , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
-                    + "                    , IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "                    , IFNULL(DATE( w.tUltControl      ), '0000-00-00')) ) nDiasNoSincro \n"
+                    + ", w.nDiasNoSincro \n"
+                    + ", u.cEmail, u.cNombre \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    + " WHERE DATEDIFF(w.dProximoCierre,NOW()) + CASE WHEN TIMESTAMPDIFF(MONTH,w.dIniVigencia, w.dProximoCierre) <= 1 THEN DAY(LAST_DAY(NOW())) ELSE 0 END = ? \n"
+                    + " WHERE nDiasAlCierre = ? \n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
@@ -86,10 +82,9 @@ public class AFacturar {
                 Date dInicio = ConvertDate.toDate( rsNotif.getDate( "dInicio" ) );
                 Date dFin = ConvertDate.toDate( rsNotif.getDate( "dFin" ) );
 
-                
                 Map<String, String> mReg = new HashMap<String, String>();
                 mReg.put( "cPatente", cPatente );
-                mReg.put( "dInicio", fmtSimple.format( dInicio) );
+                mReg.put( "dInicio", fmtSimple.format( dInicio ) );
                 mReg.put( "dFin", fmtSimple.format( dFin ) );
                 mReg.put( "cFecCierre", fmtLargo.format( dFin ) );
                 mReg.put( "cDiaCierre", fmtDia.format( dFin ) );
