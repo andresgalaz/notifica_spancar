@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertJSON;
+import prg.util.cnv.ConvertList;
 import prg.util.cnv.ConvertMap;
 import snapCar.notif.config.Ambiente;
 import snapCar.notif.config.Parametro;
@@ -115,21 +116,23 @@ public class CallWsMail {
             conn.disconnect();
             Map mError = null;
             try {
-                // Si es un objeto Json (no un Array), es por que es un error
-                // {
-                // "status": "error",
-                // "code": 5,
-                // "name": "Unknown_Template",
-                // "message": "No such template \"a_facturar_01x\""
-                // }
-                mError = ConvertMap.fromJsonString( sb.toString() );
+                String cResp = sb.toString();
+                if( cResp.startsWith( "[" )){
+                    List aResp = ConvertList.fromJsonString( cResp );
+                    if(aResp.size()>0)
+                        mError = (Map) aResp.get( 0 );
+                } else
+                    mError = ConvertMap.fromJsonString( sb.toString() );
             } catch (Exception e) {
-                // Es porque no es un objeto sino una lista, lo cual indica que está ok
+                throw new FrameworkException( "Error inesperado al procesar respuesta", e );
             }
-            if (mError == null)
+            if (mError != null && "sent".equals( mError.get( "status" )))
                 logger.debug( "Se envió mensaje correctamente" );
-            else
-                throw new FrameworkException( mError.get( "name" ) + "\n" + mError.get( "message" ) );
+            else {
+                if(mError.containsKey( "name" ))
+                    throw new FrameworkException( mError.get( "name" ) + "\n" + mError.get( "message" ) );
+                throw new FrameworkException( ConvertJSON.MapToString( mError ));
+            }
         } catch (MalformedURLException e) {
             throw new FrameworkException( "La URL del servidor API es errónea" );
         } catch (IOException e) {

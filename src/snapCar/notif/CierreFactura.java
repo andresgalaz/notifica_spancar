@@ -35,7 +35,7 @@ public class CierreFactura {
     private static Logger    logger         = Logger.getLogger( CierreFactura.class );
     private Connection       cnx;
     // Es negavtivo porque se buscan los que ya cerraron, justo ayer
-    private static final int DIAS_AL_CIERRE = -1;
+    private static final int DIAS_AL_CIERRE = -2;
 
     public CierreFactura(Connection cnx) {
         this.cnx = cnx;
@@ -56,14 +56,15 @@ public class CierreFactura {
             String cSql = "SELECT w.cPatente \n"
                     + "     , DATE_FORMAT(w.dProximoCierre + INTERVAL -1 MONTH, '%d/%m/%Y')    dInicio \n"
                     + "     , DATE_FORMAT(w.dProximoCierre                    , '%d/%m/%Y')    dFin \n"
+                    + "     , w.nDiasNoSincro \n"
                     + "     , u.cEmail, u.cNombre                                              cNombre \n"
                     + "     , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
                     + "               , IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dFecSincro \n"
+                    + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE nDiasAlCierre = ?\n"
-                    + " AND   nDiasNoSincro = 0\n"
+                    // + " AND   nDiasNoSincro = 0\n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
