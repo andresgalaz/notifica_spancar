@@ -26,7 +26,7 @@ public class Ambiente {
         Map<String, String> env = System.getenv();
         AMBIENTE = env.get( "WSAPI_AMBIENTE" );
         if (ConvertString.isEmpty( AMBIENTE ))
-            throw new RuntimeException( "No est-a declarada la variable de ambiente: WSAPI_AMBIENTE" );
+            throw new RuntimeException( "No está declarada la variable de ambiente: WSAPI_AMBIENTE" );
     }
 
 }

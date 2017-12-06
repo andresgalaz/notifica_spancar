@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
   
+= v00003 =
+@ 01/12/2017
+ * Facturacion Parcial
+ 
 = v00002 =
 @ 24/11/2017
  * Se controla bVigente='1' en tVehiculo

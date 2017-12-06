@@ -59,6 +59,7 @@ public class Parametro {
             logger.info( "smtp_password :" + prop.getProperty( "smtp_password" ) );
 
             logger.info( "mail_from :" + prop.getProperty( "mail_from" ) );
+            logger.info( "mail_admin :" + prop.getProperty( "mail_admin" ) );
 
             logger.info( "ws_mail_url         :" + prop.getProperty( "ws_mail_url" ) );
             logger.info( "ws_mail_key         :" + prop.getProperty( "ws_mail_key" ) );
@@ -66,7 +67,7 @@ public class Parametro {
             logger.info( "ws_mail_bcc_address :" + prop.getProperty( "ws_mail_bcc_address" ) );
 
             logger.info( "mail_test :" + prop.getProperty( "mail_test" ) );
-            
+
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {

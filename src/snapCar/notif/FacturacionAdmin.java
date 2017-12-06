@@ -21,6 +21,8 @@ import javax.mail.internet.MimeBodyPart;
 import org.apache.log4j.Logger;
 
 import prg.util.cnv.ConvertList;
+import prg.util.cnv.ConvertMap;
+import prg.util.cnv.ConvertTimestamp;
 import snapCar.mail.Mail;
 import snapCar.notif.config.Parametro;
 
@@ -33,17 +35,114 @@ import snapCar.notif.config.Parametro;
  *
  */
 public class FacturacionAdmin {
-    private static Logger logger = Logger.getLogger( FacturacionAdmin.class );
-    private Connection    cnx;
-    private Mail          mail;
+    private static Logger    logger         = Logger.getLogger( FacturacionAdmin.class );
+    private Connection       cnx;
+    private Mail             mail;
+
+    private static final int DIAS_AL_CIERRE = -2;
 
     public FacturacionAdmin(Connection cnx, Mail mail) {
         this.cnx = cnx;
         this.mail = mail;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void procesa() throws SQLException {
+        // Este llama al que hace el cálculo: Primer parámetro es el usuario, segundo parámetro es el vehiculo
+        PreparedStatement psExecCalc = cnx.prepareStatement( "{CALL prFacturador( ? )}" );
+        // Para un vehñiculo solo dedebería generarse un registro en wMemoryScoreVehiculo por cada vez que se
+        // calcula
+
+        PreparedStatement psListCalc = null;
+        {
+            String cSqlCampos = ""
+                    + "       pVehiculo        as idVehiculo    , pUsuario         as idUsuario     , dInicio          as iniPeriodo      \n"
+                    + "     , dFin             as finperiodo    , dInstalacion     as fecInstalacion, tUltimoViaje     as ultViaje        \n"
+                    + "     , tUltimaSincro    as ultSincro     , nKms             as kms           , nKmsPond         as kmsPond         \n"
+                    + "     , nScore           as score         , nQViajes         as qViajes       , nQFrenada        as qFrenadas       \n"
+                    + "     , nQAceleracion    as qAceleraciones, nQVelocidad      as qExcesosVel   , nQCurva          as qCurvas         \n"
+                    + "     , nDescuento       as descuento     , nDescuentoKM     as descuentoKm   , nDescuentoSinUso as descuentoSinUso \n"
+                    + "     , nDescuentoPunta  as descuentoPunta, nDiasTotal       as diasTotal     , nDiasUso         as diasUso         \n"
+                    + "     , nDiasPunta       as diasPunta     , nDiasSinMedicion as diasSinMedicion \n"
+                    + "     , (nDescuentoKM + nDescuentoSinUso w.nDescuentoPunta)  as descuentoSinPond \n";
+
+            String cSql = ""
+                    + "SELECT 'Real' as tpCalculo, " + cSqlCampos + " FROM  wMemoryScoreVehiculo \n"
+                    + "UNION ALL \n"
+                    + "SELECT 'Sin multa' cTpFactura, " + cSqlCampos + " FROM  wMemoryScoreVehiculoSinMulta \n";
+
+            psListCalc = cnx.prepareStatement( cSql );
+        }
+
+        // Armado cursor que detecta los vehículos a facturar
+        String cSql = "SELECT v.pVehiculo \n"
+                + "      , v.cPatente \n"
+                + "      , v.cPoliza \n"
+                + "      , u.cNombre, u.cEmail \n"
+                + " FROM   tVehiculo v \n"
+                + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
+                + " WHERE  v.cPoliza is not null \n"
+                + " AND    fnPeriodoActual(v.dIniVigencia, -1) >= v.dIniVigencia \n"
+                // Dias al cierre
+                + " AND    datediff(fnPeriodoActual(v.dIniVigencia, 1),now()) <= ? \n";
+        PreparedStatement psSql = cnx.prepareStatement( cSql );
+        psSql.setInt( 1, DIAS_AL_CIERRE );
+        ResultSet rsNotif = psSql.executeQuery();
+
+        String cFecFacturacion = ConvertTimestamp.toString( new Date() );
+        List<Map> dataFactura = new ArrayList<Map>();
+        while (rsNotif.next()) {
+            int pVehiculo = rsNotif.getInt( "pVehiculo" );
+            String cPatente = rsNotif.getString( "cPatente" );
+            String cNombre = rsNotif.getString( "cNombre" );
+            String cEmail = rsNotif.getString( "cEmail" );
+            String cPoliza = rsNotif.getString( "cPoliza" );
+
+            // Factura
+            psExecCalc.setInt( 1, pVehiculo );
+
+            ResultSet rsDet = psListCalc.executeQuery();
+            while (rsDet.next()) {
+                Map mReg = ConvertMap.fromResultSet( rsDet );
+                mReg.put( "patente", cPatente );
+                mReg.put( "nombre", cNombre );
+                mReg.put( "email", cEmail );
+                mReg.put( "poliza", cPoliza );
+                mReg.put( "fecFacturacion", cFecFacturacion );
+
+                dataFactura.add( mReg );
+            }
+        }
+        rsNotif.close();
+        psSql.close();
+        psExecCalc.close();
+        psListCalc.close();
+        // Una vez cerrado los cursores, deberíamos tener en la lista dataFactura todos los registros facturados, se
+        // envía una mail administrativo de control
+        if (dataFactura.size() > 0) {
+            // Prepara un adjunto del tipo CSV con la información
+            MimeBodyPart adjCsv;
+            try {
+                adjCsv = this.mail.creaAdjunto( "facturacion-" + cFecFacturacion.replaceAll( ":", "" ) + ".csv", Mail.TP_ADJUNTO_CSV //
+                // Los CSV si se levantan con Windows en mejor codificación ISO que UTF
+                        , armaCsv( dataFactura ).getBytes( "ISO8859-1" ) );
+                String cFrom = Parametro.get( "mail_from" );
+                String cToEmails = Parametro.get( "mail_admin" );
+
+                this.mail.envia( "Facturación " + cFecFacturacion, cFrom, cToEmails, armaMail( dataFactura ), adjCsv );
+            } catch (UnsupportedEncodingException e) {
+                logger.error( "No se pudo crear CSV por error de codificación", e );
+                throw new RuntimeException( e );
+            } catch (MessagingException e) {
+                logger.error( "No se pudo enviar el mail", e );
+                throw new RuntimeException( e );
+            }
+        }
+
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void procesa() {
+    public void procesaOld() {
         try {
             String cFrom = Parametro.get( "mail_from" );
             String cToEmails = null;

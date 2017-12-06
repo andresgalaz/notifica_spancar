@@ -1,9 +1,12 @@
 package snapCar.notif;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.mail.NoSuchProviderException;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
@@ -16,9 +19,19 @@ import snapCar.notif.config.Parametro;
 public class Principal {
     private static Logger logger = Logger.getLogger( Principal.class );
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void main(String[] args) throws FrameworkException {
         org.apache.log4j.PropertyConfigurator.configure( "log4j.properties" );
         logger.info( "Inicio del proceso" );
+
+        {
+            // Test string substituidor
+            Map m = new HashMap();
+            m.put( "nDescuento", 28 );
+            m.put( "cNombre", "Hola mundo" );
+            StrSubstitutor sub = new StrSubstitutor( m, "{{", "}}", '\\' );
+            System.out.println( sub.replace( "The {{nDescuento}} jumps over the \\{{NADA} lazy {{cNombre}}. ${undefined.number:-1234567890}." ) );
+        }
 
         // Conecta a la base de datos
         TConexionDB cnx = new TConexionDB();
@@ -37,9 +50,31 @@ public class Principal {
         }
         logger.info( "Ambiente:" + Ambiente.getNombre() );
 
+        Mail mail = null;
+        try {
+            // Se instancia servicio SMTP mail
+            mail = new Mail();
+
+            // Proceso notificaciones de factura
+            FacturacionAdmin notif = new FacturacionAdmin( hlp.getConnection(), mail );
+            notif.procesa();
+            hlp.getConnection().commit();
+
+        } catch (NoSuchProviderException e) {
+            logger.error( "No está habilitado el servidor de MAIL", e );
+            return;
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            if (!(e instanceof RuntimeException))
+                logger.error( "Al procesar facturación", e );
+        }
+
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
-            CierreFactura notif = new CierreFactura( hlp.getConnection() );
+            FacturaParcial notif = new FacturaParcial( hlp.getConnection() );
             notif.procesa();
             hlp.getConnection().commit();
         } catch (Exception e) {
@@ -50,7 +85,32 @@ public class Principal {
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
 
-        
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            NoSincro notif = new NoSincro( hlp.getConnection() );
+            notif.procesa();
+            hlp.getConnection().commit();
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
+        }
+
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            CierreFactura notif = new CierreFactura( hlp.getConnection() );
+            notif.procesa();
+            hlp.getConnection().commit();
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
+        }
+
         // Proceso notificaciones a clientes que están a punto de facturar
         try {
             AFacturar notif = new AFacturar( hlp.getConnection() );
@@ -64,28 +124,6 @@ public class Principal {
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
 
-        // Se instancia aquí para verificar
-        Mail mail = null;
-        try {
-            mail = new Mail();
-        } catch (NoSuchProviderException e) {
-            logger.error( "No está habilitado el servidor de MAIL", e );
-            return;
-        }
-
-        // Proceso notificaciones de factura
-        try {
-            FacturacionAdmin notif = new FacturacionAdmin( hlp.getConnection(), mail );
-            notif.procesa();
-            hlp.getConnection().commit();
-        } catch (Exception e) {
-            try {
-                hlp.getConnection().rollback();
-            } catch (SQLException e1) {
-            }
-            if (!(e instanceof RuntimeException))
-                logger.error( "Al procesar notificaciones de facturación", e );
-        }
         hlp.closeConnection();
         logger.info( "Fin del proceso" );
     }
