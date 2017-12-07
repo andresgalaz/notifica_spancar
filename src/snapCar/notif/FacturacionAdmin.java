@@ -64,7 +64,7 @@ public class FacturacionAdmin {
                     + "     , nDescuento       as descuento     , nDescuentoKM     as descuentoKm   , nDescuentoSinUso as descuentoSinUso \n"
                     + "     , nDescuentoPunta  as descuentoPunta, nDiasTotal       as diasTotal     , nDiasUso         as diasUso         \n"
                     + "     , nDiasPunta       as diasPunta     , nDiasSinMedicion as diasSinMedicion \n"
-                    + "     , (nDescuentoKM + nDescuentoSinUso w.nDescuentoPunta)  as descuentoSinPond \n";
+                    + "     , (nDescuentoKM + nDescuentoSinUso + nDescuentoPunta)  as descuentoSinPond \n";
 
             String cSql = ""
                     + "SELECT 'Real' as tpCalculo, " + cSqlCampos + " FROM  wMemoryScoreVehiculo \n"
@@ -82,9 +82,10 @@ public class FacturacionAdmin {
                 + " FROM   tVehiculo v \n"
                 + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
                 + " WHERE  v.cPoliza is not null \n"
-                + " AND    fnPeriodoActual(v.dIniVigencia, -1) >= v.dIniVigencia \n"
+                + " AND    v.bVigente = '1' \n"
+                + " AND    fnPeriodoActual(v.dIniVigencia, 0) > v.dIniVigencia \n"
                 // Dias al cierre
-                + " AND    datediff(fnPeriodoActual(v.dIniVigencia, 1),now()) <= ? \n";
+                + " AND    datediff(fnPeriodoActual(v.dIniVigencia, 0),now()) = ? \n";
         PreparedStatement psSql = cnx.prepareStatement( cSql );
         psSql.setInt( 1, DIAS_AL_CIERRE );
         ResultSet rsNotif = psSql.executeQuery();
@@ -100,6 +101,7 @@ public class FacturacionAdmin {
 
             // Factura
             psExecCalc.setInt( 1, pVehiculo );
+            psExecCalc.execute();
 
             ResultSet rsDet = psListCalc.executeQuery();
             while (rsDet.next()) {
