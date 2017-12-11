@@ -20,7 +20,6 @@ import javax.mail.internet.MimeBodyPart;
 
 import org.apache.log4j.Logger;
 
-import prg.util.cnv.ConvertList;
 import prg.util.cnv.ConvertMap;
 import prg.util.cnv.ConvertTimestamp;
 import snapCar.mail.Mail;
@@ -57,7 +56,7 @@ public class FacturacionAdmin {
         {
             String cSqlCampos = ""
                     + "       pVehiculo        as idVehiculo    , pUsuario         as idUsuario     , dInicio          as iniPeriodo      \n"
-                    + "     , dFin             as finperiodo    , dInstalacion     as fecInstalacion, tUltimoViaje     as ultViaje        \n"
+                    + "     , dFin             as finPeriodo    , dInstalacion     as fecInstalacion, tUltimoViaje     as ultViaje        \n"
                     + "     , tUltimaSincro    as ultSincro     , nKms             as kms           , nKmsPond         as kmsPond         \n"
                     + "     , nScore           as score         , nQViajes         as qViajes       , nQFrenada        as qFrenadas       \n"
                     + "     , nQAceleracion    as qAceleraciones, nQVelocidad      as qExcesosVel   , nQCurva          as qCurvas         \n"
@@ -78,7 +77,9 @@ public class FacturacionAdmin {
         String cSql = "SELECT v.pVehiculo \n"
                 + "      , v.cPatente \n"
                 + "      , v.cPoliza \n"
+                + "      , v.fUsuarioTitular \n"
                 + "      , u.cNombre, u.cEmail \n"
+                + "      , v.dIniVigencia \n"
                 + " FROM   tVehiculo v \n"
                 + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
                 + " WHERE  v.cPoliza is not null \n"
@@ -95,10 +96,11 @@ public class FacturacionAdmin {
         while (rsNotif.next()) {
             int pVehiculo = rsNotif.getInt( "pVehiculo" );
             String cPatente = rsNotif.getString( "cPatente" );
+            int pUsuario = rsNotif.getInt( "fUsuarioTitular" );
             String cNombre = rsNotif.getString( "cNombre" );
             String cEmail = rsNotif.getString( "cEmail" );
             String cPoliza = rsNotif.getString( "cPoliza" );
-
+            String cFecIniVigencia = rsNotif.getString( "dIniVigencia" );
             // Factura
             psExecCalc.setInt( 1, pVehiculo );
             psExecCalc.execute();
@@ -107,9 +109,11 @@ public class FacturacionAdmin {
             while (rsDet.next()) {
                 Map mReg = ConvertMap.fromResultSet( rsDet );
                 mReg.put( "patente", cPatente );
+                mReg.put( "idUsuario", pUsuario );
                 mReg.put( "nombre", cNombre );
                 mReg.put( "email", cEmail );
                 mReg.put( "poliza", cPoliza );
+                mReg.put( "inicioVigencia", cFecIniVigencia );
                 mReg.put( "fecFacturacion", cFecFacturacion );
 
                 dataFactura.add( mReg );
@@ -141,58 +145,6 @@ public class FacturacionAdmin {
             }
         }
 
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void procesaOld() {
-        try {
-            String cFrom = Parametro.get( "mail_from" );
-            String cToEmails = null;
-
-            String cSql = "SELECT n.pNotificacion, n.cMensaje, t.cEmails "
-                    + " FROM tNotificacion n "
-                    + "      JOIN tTpNotificacion t ON t.pTpNotificacion = n.fTpNotificacion "
-                    + " WHERE n.fTpNotificacion = 2 AND n.tEnviado is null";
-            PreparedStatement psSql = cnx.prepareStatement( cSql );
-            PreparedStatement psUpd = cnx.prepareStatement( "UPDATE tNotificacion SET tEnviado = NOW() WHERE pNotificacion = ?" );
-
-            ResultSet rsNotif = psSql.executeQuery();
-            List<Map> data = new ArrayList<Map>();
-            while (rsNotif.next()) {
-                int pNotificacion = rsNotif.getInt( "pNotificacion" );
-                String cMensaje = rsNotif.getString( "cMensaje" );
-                if (cToEmails == null)
-                    cToEmails = rsNotif.getString( "cEmails" );
-                // Junta los datos de las notificaciones pendientes de enviar, así solo envía un mail por todo el
-                // conjunto
-                data.addAll( ConvertList.fromJsonString( cMensaje ) );
-
-                psUpd.setInt( 1, pNotificacion );
-                psUpd.execute();
-            }
-            rsNotif.close();
-            psSql.close();
-            psUpd.close();
-
-            if (data.size() > 0) {
-                // tomamos la fecha del primer registro
-                String cFecFact = (String) data.get( 0 ).get( "fecFacturacion" );
-                // Prepara un adjunto del tipo CSV con la información
-                MimeBodyPart adjCsv = this.mail.creaAdjunto( "facturacion-" + cFecFact.replaceAll( ":", "" ) + ".csv", Mail.TP_ADJUNTO_CSV //
-                // Los CSV si se levantan con Windows en mejor codificación ISO que UTF
-                        , armaCsv( data ).getBytes( "ISO8859-1" ) );
-                this.mail.envia( "Facturación " + cFecFact, cFrom, cToEmails, armaMail( data ), adjCsv );
-            }
-        } catch (SQLException e) {
-            logger.error( "Al lee notificaciones tipo 2", e );
-            throw new RuntimeException( e );
-        } catch (MessagingException e) {
-            logger.error( "No se pudo enviar el mail", e );
-            throw new RuntimeException( e );
-        } catch (UnsupportedEncodingException e) {
-            logger.error( "No se pudo crear CSV por error de codificación", e );
-            throw new RuntimeException( e );
-        }
     }
 
     @SuppressWarnings("rawtypes")
@@ -281,16 +233,6 @@ public class FacturacionAdmin {
     private String armaCsv(List data) {
         StringBuffer sb = new StringBuffer();
 
-        sb.append( "Id. Vehiculo;" );
-        sb.append( "Patente;" );
-        sb.append( "Periodo Inicio;" );
-        sb.append( "Periodo Fin;" );
-        sb.append( "Inicio Vigencia;" );
-        sb.append( "Id. Usuario;" );
-        sb.append( "Nombre;" );
-        sb.append( "Email;" );
-        sb.append( "Descuento;" );
-        sb.append( "Fecha Facturación\n" );
         sb.append( "tpCalculo;" );
         sb.append( "idVehiculo;" );
         sb.append( "patente;" );
@@ -302,7 +244,7 @@ public class FacturacionAdmin {
         sb.append( "idUsuario;" );
         sb.append( "nombre;" );
         sb.append( "iniPeriodo;" );
-        sb.append( "finperiodo;" );
+        sb.append( "finPeriodo;" );
         sb.append( "kms;" );
         sb.append( "kmsPond;" );
         sb.append( "score;" );
@@ -337,7 +279,7 @@ public class FacturacionAdmin {
             sb.append( m.get( "idUsuario" ) + ";" );
             sb.append( m.get( "nombre" ) + ";" );
             sb.append( m.get( "iniPeriodo" ) + ";" );
-            sb.append( m.get( "finperiodo" ) + ";" );
+            sb.append( m.get( "finPeriodo" ) + ";" );
             sb.append( m.get( "kms" ) + ";" );
             sb.append( m.get( "kmsPond" ) + ";" );
             sb.append( m.get( "score" ) + ";" );

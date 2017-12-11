@@ -24,15 +24,6 @@ public class Principal {
         org.apache.log4j.PropertyConfigurator.configure( "log4j.properties" );
         logger.info( "Inicio del proceso" );
 
-        {
-            // Test string substituidor
-            Map m = new HashMap();
-            m.put( "nDescuento", 28 );
-            m.put( "cNombre", "Hola mundo" );
-            StrSubstitutor sub = new StrSubstitutor( m, "{{", "}}", '\\' );
-            System.out.println( sub.replace( "The {{nDescuento}} jumps over the \\{{NADA} lazy {{cNombre}}. ${undefined.number:-1234567890}." ) );
-        }
-
         // Conecta a la base de datos
         TConexionDB cnx = new TConexionDB();
         cnx.setcNombre( "nueva" );
@@ -49,7 +40,7 @@ public class Principal {
             return;
         }
         logger.info( "Ambiente:" + Ambiente.getNombre() );
-
+                
         Mail mail = null;
         try {
             // Se instancia servicio SMTP mail
@@ -123,7 +114,7 @@ public class Principal {
             }
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
-
+        
         hlp.closeConnection();
         logger.info( "Fin del proceso" );
     }

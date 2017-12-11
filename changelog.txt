@@ -1,6 +1,11 @@
 = Pendiente
  * Agregar los mensajes que faltan
   
+= v00004 =
+@ 11/12/2017
+ * Facturacion Administrativa
+ * Correciones a la SHELL y Crontab
+ 
 = v00003 =
 @ 01/12/2017
  * Facturacion Parcial
