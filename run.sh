@@ -3,7 +3,12 @@
 # Se posiciona en la ruta donde está la SHELL
 RUTA=`dirname "$0"`
 if [ $RUTA != "." ] ; then
-    cd $RUTA
+	cd $RUTA
+fi
+
+if [ "$1" ] ; then
+	WSAPI_AMBIENTE="$1"
+	export WSAPI_AMBIENTE
 fi
 
 echo Inicio $(date)

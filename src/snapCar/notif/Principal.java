@@ -1,12 +1,9 @@
 package snapCar.notif;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.mail.NoSuchProviderException;
 
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
@@ -19,7 +16,6 @@ import snapCar.notif.config.Parametro;
 public class Principal {
     private static Logger logger = Logger.getLogger( Principal.class );
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void main(String[] args) throws FrameworkException {
         org.apache.log4j.PropertyConfigurator.configure( "log4j.properties" );
         logger.info( "Inicio del proceso" );
@@ -40,7 +36,20 @@ public class Principal {
             return;
         }
         logger.info( "Ambiente:" + Ambiente.getNombre() );
-                
+
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            NoSincro notif = new NoSincro( hlp.getConnection() );
+            notif.procesa();
+            hlp.getConnection().commit();
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
+        }
+
         Mail mail = null;
         try {
             // Se instancia servicio SMTP mail
@@ -78,19 +87,6 @@ public class Principal {
 
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
-            NoSincro notif = new NoSincro( hlp.getConnection() );
-            notif.procesa();
-            hlp.getConnection().commit();
-        } catch (Exception e) {
-            try {
-                hlp.getConnection().rollback();
-            } catch (SQLException e1) {
-            }
-            logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
-        }
-
-        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
-        try {
             CierreFactura notif = new CierreFactura( hlp.getConnection() );
             notif.procesa();
             hlp.getConnection().commit();
@@ -114,7 +110,7 @@ public class Principal {
             }
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
-        
+
         hlp.closeConnection();
         logger.info( "Fin del proceso" );
     }
