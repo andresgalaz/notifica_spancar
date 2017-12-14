@@ -42,7 +42,7 @@ public class NoSincro {
     }
 
     @SuppressWarnings({ "rawtypes" })
-    public void procesa() {
+    public void procesa() throws FrameworkException {
         Locale.setDefault( new Locale( "es", "ES" ) );
         SimpleDateFormat fmtLargo = new SimpleDateFormat( "EEEE d 'de' MMMM 'de' YYYY " );
         SimpleDateFormat fmtDia = new SimpleDateFormat( "EEEE" );

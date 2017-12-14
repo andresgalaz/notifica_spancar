@@ -37,7 +37,7 @@ public class FacturaParcial {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void procesa() {
+    public void procesa() throws FrameworkException {
         Locale.setDefault( new Locale( "es", "ES" ) );
         SimpleDateFormat fmtNormal = new SimpleDateFormat( "dd/MM/YYYY" );
 
@@ -47,7 +47,7 @@ public class FacturaParcial {
             // Para un vehñiculo solo dedebería generarse un registro en wMemoryScoreVehiculo por cada vez que se
             // calcula
             String cSql = "SELECT \n"
-                    + "     , nSinMedicion, nKms, nScore, nDescuento  \n"
+                    + "       nSinMedicion, nKms, nScore, nDescuento  \n"
                     + "     , nQVelocidad, nQAceleracion, nQFrenada, nQCurva \n"
                     + " FROM  wMemoryScoreVehiculo";
             PreparedStatement psListCalc = cnx.prepareStatement( cSql );

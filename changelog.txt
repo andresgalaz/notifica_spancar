@@ -1,5 +1,9 @@
 = Pendiente
  * Agregar los mensajes que faltan
+
+= v00004a =
+@ 14/12/2017
+ * Se corrige error sintaxis SQL en FacturaParcial
   
 = v00004 =
 @ 11/12/2017

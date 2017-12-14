@@ -141,7 +141,7 @@ public class CallWsMail {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List<Map> createAddressTo(String cNombre, String cEmail) {
+    public List<Map> createAddressTo(String cNombre, String cEmail) throws FrameworkException {
         Map m = new HashMap();
         // Ambiente.fixSendEnail cambia el mail de destino para evitar accidentes de envios en ambientes que no sean
         // producción
