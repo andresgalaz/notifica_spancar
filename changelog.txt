@@ -1,6 +1,11 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00004b =
+@ 19/12/2017
+ * Se reduce la cantidad columnas del CSV del 
+   proceso 'Administración facturas'
+  
 = v00004a =
 @ 14/12/2017
  * Se corrige error sintaxis SQL en FacturaParcial

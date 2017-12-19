@@ -233,73 +233,48 @@ public class FacturacionAdmin {
     private String armaCsv(List data) {
         StringBuffer sb = new StringBuffer();
 
-        sb.append( "tpCalculo;" );
-        sb.append( "idVehiculo;" );
         sb.append( "patente;" );
-        sb.append( "poliza;" );
-        sb.append( "periodo;" );
-        sb.append( "inicioVigencia;" );
-        sb.append( "fecInstalacion;" );
-        sb.append( "email;" );
-        sb.append( "idUsuario;" );
         sb.append( "nombre;" );
+        sb.append( "inicioVigencia;" );
         sb.append( "iniPeriodo;" );
         sb.append( "finPeriodo;" );
+        sb.append( "descuento;" );
         sb.append( "kms;" );
         sb.append( "kmsPond;" );
         sb.append( "score;" );
-        sb.append( "descuentoKm;" );
-        sb.append( "descuentoSinUso;" );
-        sb.append( "descuentoPunta;" );
-        sb.append( "descuentoSinPond;" );
-        sb.append( "descuento;" );
-        sb.append( "qViajes;" );
         sb.append( "qFrenadas;" );
         sb.append( "qAceleraciones;" );
         sb.append( "qExcesosVel;" );
         sb.append( "qCurvas;" );
+        sb.append( "qViajes;" );
         sb.append( "diasTotal;" );
         sb.append( "diasUso;" );
         sb.append( "diasPunta;" );
         sb.append( "diasSinMedicion;" );
-        sb.append( "ultViaje;" );
-        sb.append( "ultSincro;" );
-        sb.append( "fecFacturacion\n" );
+        sb.append( "diasViaje;" );
 
         for (int i = 0; i < data.size(); i++) {
             Map m = (Map) data.get( i );
-            sb.append( m.get( "tpCalculo" ) + ";" );
-            sb.append( m.get( "idVehiculo" ) + ";" );
+
             sb.append( m.get( "patente" ) + ";" );
-            sb.append( m.get( "poliza" ) + ";" );
-            sb.append( m.get( "periodo" ) + ";" );
-            sb.append( m.get( "inicioVigencia" ) + ";" );
-            sb.append( m.get( "fecInstalacion" ) + ";" );
-            sb.append( m.get( "email" ) + ";" );
-            sb.append( m.get( "idUsuario" ) + ";" );
             sb.append( m.get( "nombre" ) + ";" );
+            sb.append( m.get( "inicioVigencia" ) + ";" );
             sb.append( m.get( "iniPeriodo" ) + ";" );
             sb.append( m.get( "finPeriodo" ) + ";" );
+            sb.append( m.get( "descuento" ) + ";" );
             sb.append( m.get( "kms" ) + ";" );
             sb.append( m.get( "kmsPond" ) + ";" );
             sb.append( m.get( "score" ) + ";" );
-            sb.append( m.get( "descuentoKm" ) + ";" );
-            sb.append( m.get( "descuentoSinUso" ) + ";" );
-            sb.append( m.get( "descuentoPunta" ) + ";" );
-            sb.append( m.get( "descuentoSinPond" ) + ";" );
-            sb.append( m.get( "descuento" ) + ";" );
-            sb.append( m.get( "qViajes" ) + ";" );
             sb.append( m.get( "qFrenadas" ) + ";" );
             sb.append( m.get( "qAceleraciones" ) + ";" );
             sb.append( m.get( "qExcesosVel" ) + ";" );
             sb.append( m.get( "qCurvas" ) + ";" );
+            sb.append( m.get( "qViajes" ) + ";" );
             sb.append( m.get( "diasTotal" ) + ";" );
             sb.append( m.get( "diasUso" ) + ";" );
             sb.append( m.get( "diasPunta" ) + ";" );
             sb.append( m.get( "diasSinMedicion" ) + ";" );
-            sb.append( m.get( "ultViaje" ) + ";" );
-            sb.append( m.get( "ultSincro" ) + ";" );
-            sb.append( m.get( "fecFacturacion" ) + "\n" );
+            sb.append( m.get( "diasViaje" ) + "\n" );
         }
         return sb.toString();
     }
