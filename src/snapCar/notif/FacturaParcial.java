@@ -47,7 +47,7 @@ public class FacturaParcial {
             // Para un vehñiculo solo dedebería generarse un registro en wMemoryScoreVehiculo por cada vez que se
             // calcula
             String cSql = "SELECT \n"
-                    + "       nSinMedicion, nKms, nScore, nDescuento  \n"
+                    + "       nDiasSinMedicion, nKms, nScore, nDescuento  \n"
                     + "     , nQVelocidad, nQAceleracion, nQFrenada, nQCurva \n"
                     + " FROM  wMemoryScoreVehiculo";
             PreparedStatement psListCalc = cnx.prepareStatement( cSql );
@@ -86,8 +86,8 @@ public class FacturaParcial {
 
                 ResultSet rsCalc = psListCalc.executeQuery();
                 rsCalc.next();
-                int nSinMedicion = rsCalc.getInt( "nSinMedicion" );
-                if( nSinMedicion < MAX_DIAS_SIN_MEDICION ){
+                int nDiasSinMedicion = rsCalc.getInt( "nDiasSinMedicion" );
+                if( nDiasSinMedicion < MAX_DIAS_SIN_MEDICION ){
                     int nKms = rsCalc.getInt( "nKms" );
                     int nScore = rsCalc.getInt( "nScore" );
                     int nDescuento = rsCalc.getInt( "nDescuento" );
