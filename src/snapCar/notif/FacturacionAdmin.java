@@ -38,7 +38,7 @@ public class FacturacionAdmin {
     private Connection       cnx;
     private Mail             mail;
 
-    private static final int DIAS_AL_CIERRE = -2;
+    private static final int DIAS_AL_CIERRE = -3;
 
     public FacturacionAdmin(Connection cnx, Mail mail) {
         this.cnx = cnx;
@@ -251,7 +251,7 @@ public class FacturacionAdmin {
         sb.append( "diasUso;" );
         sb.append( "diasPunta;" );
         sb.append( "diasSinMedicion;" );
-        sb.append( "diasViaje;" );
+        sb.append( "diasViaje" + "\r\n" );
 
         for (int i = 0; i < data.size(); i++) {
             Map m = (Map) data.get( i );
@@ -274,7 +274,7 @@ public class FacturacionAdmin {
             sb.append( m.get( "diasUso" ) + ";" );
             sb.append( m.get( "diasPunta" ) + ";" );
             sb.append( m.get( "diasSinMedicion" ) + ";" );
-            sb.append( m.get( "diasViaje" ) + "\n" );
+            sb.append( m.get( "diasViaje" ) + "\r\n" );
         }
         return sb.toString();
     }

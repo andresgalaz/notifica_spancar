@@ -1,6 +1,15 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00004d =
+@ 29/12/2017
+ * Se cambia a -3 días 'Administración facturas'
+
+= v00004c =
+@ 26/12/2017
+ * Se agrega fin de linea en el encabezado y las líneas del CSV
+   'Administración facturas'
+  
 = v00004b =
 @ 19/12/2017
  * Se reduce la cantidad columnas del CSV del 
