@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00004e =
+@ 04/01/2017
+ * Se deja de mostrar Facturación 'Sin Multa' en CSV
+
 = v00004d =
 @ 29/12/2017
  * Se cambia a -3 días 'Administración facturas'

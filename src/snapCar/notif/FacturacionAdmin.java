@@ -255,6 +255,8 @@ public class FacturacionAdmin {
 
         for (int i = 0; i < data.size(); i++) {
             Map m = (Map) data.get( i );
+            if (!"Real".equals( m.get( "tpCalculo" ) ))
+                continue;
 
             sb.append( m.get( "patente" ) + ";" );
             sb.append( m.get( "nombre" ) + ";" );
