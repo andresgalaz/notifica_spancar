@@ -38,7 +38,7 @@ public class FacturacionAdmin {
     private Connection       cnx;
     private Mail             mail;
 
-    private static final int DIAS_AL_CIERRE = -3;
+    private static final int DIAS_DESPUES_CIERRE = 3;
 
     public FacturacionAdmin(Connection cnx, Mail mail) {
         this.cnx = cnx;
@@ -84,11 +84,11 @@ public class FacturacionAdmin {
                 + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
                 + " WHERE  v.cPoliza is not null \n"
                 + " AND    v.bVigente = '1' \n"
-                + " AND    fnPeriodoActual(v.dIniVigencia, 0) > v.dIniVigencia \n"
+                + " AND    fnFechaCierreIni(v.dIniVigencia, 1) > v.dIniVigencia \n"
                 // Dias al cierre
-                + " AND    datediff(fnPeriodoActual(v.dIniVigencia, 0),now()) = ? \n";
+                + " AND    DATEDIFF(fnFechaCierreIni(v.dIniVigencia, 1),fnNow()) = ? \n";
         PreparedStatement psSql = cnx.prepareStatement( cSql );
-        psSql.setInt( 1, DIAS_AL_CIERRE );
+        psSql.setInt( 1, DIAS_DESPUES_CIERRE );
         ResultSet rsNotif = psSql.executeQuery();
 
         String cFecFacturacion = ConvertTimestamp.toString( new Date() );

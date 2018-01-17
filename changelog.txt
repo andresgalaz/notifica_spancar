@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00005 =
+@ 17/01/2017
+ * Se adelanta la fecha cierre inicio y fin en 7 días
+
 = v00004e =
 @ 04/01/2017
  * Se deja de mostrar Facturación 'Sin Multa' en CSV
