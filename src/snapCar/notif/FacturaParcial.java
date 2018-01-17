@@ -54,16 +54,16 @@ public class FacturaParcial {
 
             // armado del cursor principal que busca los vehiculo que están a tantos DIAS_DESDE_INICIO
             cSql = "SELECT u.pUsuario, v.pVehiculo \n"
-                    + "      , fnPeriodoActual(v.dIniVigencia, 0) dInicio \n"
-                    + "      , fnPeriodoActual(v.dIniVigencia, 1) dFin \n"
+                    + "      , fnFechaCierreIni(v.dIniVigencia, 0) dInicio \n"
+                    + "      , fnFechaCierreFin(v.dIniVigencia, 0) dFin \n"
                     + "      , v.cPatente \n"
                     + "      , IFNULL(v.cMarca, 'vehículo')       cMarca \n"
                     + "      , u.cNombre, u.cEmail \n"
                     + " FROM   tVehiculo v \n"
                     + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
                     + " WHERE  v.cPoliza is not null \n"
-                    + " AND    fnPeriodoActual(v.dIniVigencia, 1) >= v.dIniVigencia \n"
-                    + " AND    datediff(fnPeriodoActual(v.dIniVigencia, 1),now()) = ? \n";
+                    + " AND    fnFechaCierreIni(v.dIniVigencia, 1) >= v.dIniVigencia \n"
+                    + " AND    DATEDIFF(fnFechaCierreIni(v.dIniVigencia, 1),fnNow()) = ? \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
             psSql.setInt( 1, DIAS_DESDE_INICIO );
             ResultSet rsNotif = psSql.executeQuery();

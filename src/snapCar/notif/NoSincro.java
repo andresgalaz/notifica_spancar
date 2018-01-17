@@ -57,8 +57,8 @@ public class NoSincro {
                 call.close();
             }
             String cSql = "SELECT w.cPatente \n"
-                    + ", w.dProximoCierre + INTERVAL -1 MONTH   dInicio \n"
-                    + ", w.dProximoCierre                       dFin \n"
+                    + ", w.dProximoCierreIni		dInicio \n"
+                    + ", w.dProximoCierreFin		dFin \n"
                     + ", w.nDiasNoSincro \n"
                     + ", u.cEmail, u.cNombre \n"
                     + " FROM  wMemoryCierreTransf w \n"

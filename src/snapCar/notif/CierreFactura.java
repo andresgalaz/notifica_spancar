@@ -54,8 +54,8 @@ public class CierreFactura {
                 call.close();
             }
             String cSql = "SELECT w.cPatente \n"
-                    + "     , DATE_FORMAT(w.dProximoCierre + INTERVAL -1 MONTH, '%d/%m/%Y')    dInicio \n"
-                    + "     , DATE_FORMAT(w.dProximoCierre                    , '%d/%m/%Y')    dFin \n"
+                    + "     , DATE_FORMAT(w.dProximoCierreIni, '%d/%m/%Y')    dInicio \n"
+                    + "     , DATE_FORMAT(w.dProximoCierreFin, '%d/%m/%Y')    dFin \n"
                     + "     , w.nDiasNoSincro \n"
                     + "     , u.cEmail, u.cNombre                                              cNombre \n"
                     + "     , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"

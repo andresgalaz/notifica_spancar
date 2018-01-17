@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>config.properties</name>
-			<type>1</type>
-			<locationURI>PROJECT_LOC/config.properties</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
