@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00005a =
+@ 29/01/2017
+ * FacturacionAdmin se vuelve a v004e
+ 
 = v00005 =
 @ 17/01/2017
  * Se adelanta la fecha cierre inicio y fin en 7 días
