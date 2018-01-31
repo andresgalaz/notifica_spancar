@@ -34,7 +34,7 @@ import snapCar.net.CallWsMail;
 public class CierreFactura {
     private static Logger    logger         = Logger.getLogger( CierreFactura.class );
     private Connection       cnx;
-    // Es negavtivo porque se buscan los que ya cerraron, justo ayer   
+    // Es negavtivo porque se buscan los que ya cerraron, justo ayer
     private static final int DIAS_AL_CIERRE = -1;
 
     public CierreFactura(Connection cnx) {
@@ -58,8 +58,17 @@ public class CierreFactura {
                     + "     , DATE_FORMAT(w.dProximoCierreFin, '%d/%m/%Y')    dFin \n"
                     + "     , w.nDiasNoSincro \n"
                     + "     , u.cEmail, u.cNombre                                              cNombre \n"
-                    + "     , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
-                    + "               , IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
+                    /*
+                     * Fecha : 29/01/2018
+                     * Autor: A.GALAZ
+                     * Motivo: Se deja de utilizar la tabla tInicioTransferencia, porque distorsiona
+                     * La fecha real del último viaje o control file.
+                     *
+                     * + " , GREATEST( IFNULL(DATE( w.tUltTransferencia), '0000-00-00') \n"
+                     * + " , IFNULL(DATE( w.tUltViaje ), '0000-00-00') \n"
+                     * + " , IFNULL(DATE( w.tUltControl ), '0000-00-00')) dSincro \n"
+                     */
+                    + "     , GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
                     + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
