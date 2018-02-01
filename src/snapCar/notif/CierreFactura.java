@@ -72,8 +72,8 @@ public class CierreFactura {
                     + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    + " WHERE nDiasAlCierre = ?\n"
-                    + " AND   nDiasNoSincro > 0\n"
+                    + " WHERE nDiasAlCierre = ? \n"
+                    + " AND   nDiasNoSincro > 0 \n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );
