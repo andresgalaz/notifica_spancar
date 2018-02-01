@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00005c =
+@ 01/02/2018 - AGALAZ
+ * Se corrige a Periodo 0 clase AFacturar
+
 = v00005b =
 @ 31/01/2018 - AGALAZ
  * Se deja de utilizar la tabla tInicioTransferencia, porque distorsiona
