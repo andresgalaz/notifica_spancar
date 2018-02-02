@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00006 =
+@ 02/02/2018 - AGALAZ
+ * Se agrega BCC dos cuentas
+
 = v00005c =
 @ 01/02/2018 - AGALAZ
  * Se corrige a Periodo 0 clase AFacturar

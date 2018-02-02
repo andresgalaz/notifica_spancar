@@ -19,6 +19,7 @@ import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertJSON;
 import prg.util.cnv.ConvertList;
 import prg.util.cnv.ConvertMap;
+import prg.util.cnv.ConvertString;
 import snapCar.notif.config.Ambiente;
 import snapCar.notif.config.Parametro;
 
@@ -42,7 +43,7 @@ public class CallWsMail {
         wsMailUrl = Parametro.get( "ws_mail_url" );
         String wsMailKey = Parametro.get( "ws_mail_key" );
         String wsMailReplyTo = Parametro.get( "ws_mail_reply_to" );
-        String wsMailBccAddress = Parametro.get( "ws_mail_bcc_address" );
+        String wsMailBccAddress1 = Parametro.get( "ws_mail_bcc_address1" );
 
         if (wsMailUrl == null || wsMailKey == null || wsMailReplyTo == null)
             throw new RuntimeException( "Faltan parámetros de definción del servicio" );
@@ -57,7 +58,7 @@ public class CallWsMail {
             message.put( "headers", headers );
         }
         message.put( "google_analytics_domains", new String[] { "snapcar.com.ar" } );
-        message.put( "bcc_address", wsMailBccAddress );
+        message.put( "bcc_address", wsMailBccAddress1 );
         message.put( "merge", true );
         message.put( "merge_language", "handlebars" );
 
@@ -142,13 +143,22 @@ public class CallWsMail {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Map> createAddressTo(String cNombre, String cEmail) throws FrameworkException {
+        String wsMailBccAddress2 = Parametro.get( "ws_mail_bcc_address2" );
+       
+        List<Map> lisTo = new ArrayList<Map>();
         Map m = new HashMap();
+        if(!ConvertString.isEmpty( wsMailBccAddress2 )){
+            m.put( "email", wsMailBccAddress2 );
+            m.put( "name", "Control Snapcar" );
+            m.put( "type", "bcc" );
+            lisTo.add( m );
+        }
         // Ambiente.fixSendEnail cambia el mail de destino para evitar accidentes de envios en ambientes que no sean
         // producción
+        m = new HashMap();
         m.put( "email", Ambiente.fixSendEnail( cEmail ) );
         m.put( "name", cNombre );
         m.put( "type", "to" );
-        List<Map> lisTo = new ArrayList<Map>();
         lisTo.add( m );
         return lisTo;
     }

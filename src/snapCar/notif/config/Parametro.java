@@ -64,7 +64,8 @@ public class Parametro {
             logger.info( "ws_mail_url         :" + prop.getProperty( "ws_mail_url" ) );
             logger.info( "ws_mail_key         :" + prop.getProperty( "ws_mail_key" ) );
             logger.info( "ws_mail_reply_to    :" + prop.getProperty( "ws_mail_reply_to" ) );
-            logger.info( "ws_mail_bcc_address :" + prop.getProperty( "ws_mail_bcc_address" ) );
+            logger.info( "ws_mail_bcc_address1:" + prop.getProperty( "ws_mail_bcc_address1" ) );
+            logger.info( "ws_mail_bcc_address2:" + prop.getProperty( "ws_mail_bcc_address2" ) );
 
             logger.info( "mail_test :" + prop.getProperty( "mail_test" ) );
 
