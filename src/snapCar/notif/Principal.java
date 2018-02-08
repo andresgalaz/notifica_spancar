@@ -39,19 +39,6 @@ public class Principal {
 
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
-            CierreFactura notif = new CierreFactura( hlp.getConnection() );
-            notif.procesa();
-            hlp.getConnection().commit();
-        } catch (Exception e) {
-            try {
-                hlp.getConnection().rollback();
-            } catch (SQLException e1) {
-            }
-            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
-        }
-          
-        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
-        try {
             FacturaParcial notif = new FacturaParcial( hlp.getConnection() );
             notif.procesa();
             hlp.getConnection().commit();
@@ -63,7 +50,19 @@ public class Principal {
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
 
-       
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            CierreFactura notif = new CierreFactura( hlp.getConnection() );
+            notif.procesa();
+            hlp.getConnection().commit();
+        } catch (Exception e) {
+            try {
+                hlp.getConnection().rollback();
+            } catch (SQLException e1) {
+            }
+            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
+        }
+                 
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
             NoSincro notif = new NoSincro( hlp.getConnection() );

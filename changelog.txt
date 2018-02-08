@@ -1,6 +1,13 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00006a =
+@ 08/02/2018 - AGALAZ
+ * Se agrega nDiasCierreAnt a tabla wMemoryCierreTransf, para el procedure
+   prControlCierreTransferenciaInicioDef, con esto se mide la cantidad de
+   días al cierre inicial
+ * Se ajusta la cantidad de días vencidos del periodo a 13 en FacturaParcial
+
 = v00006 =
 @ 02/02/2018 - AGALAZ
  * Se agrega BCC dos cuentas

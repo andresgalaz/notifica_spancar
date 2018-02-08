@@ -29,7 +29,7 @@ import snapCar.net.CallWsMail;
 public class FacturaParcial {
     private static Logger    logger            = Logger.getLogger( FacturaParcial.class );
     private Connection       cnx;
-    private static final int DIAS_DESDE_INICIO = 17;
+    private static final int DIAS_DESDE_INICIO = 13;
     private static final int MAX_DIAS_SIN_MEDICION = 7;
 
     public FacturaParcial(Connection cnx) {
