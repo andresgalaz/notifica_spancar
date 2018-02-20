@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertFile;
 import prg.util.cnv.ConvertNumber;
 
@@ -37,11 +38,18 @@ public class Parametro {
     private static void inicio() {
         if (prop != null)
             return;
+
+        String cAmbiente;
+        try {
+            cAmbiente = "_" + Ambiente.getNombre().toLowerCase();
+        } catch (FrameworkException e) {
+            cAmbiente = "";
+        }
         prop = new Properties();
 
         InputStream input = null;
         try {
-            input = new FileInputStream( "config.properties" );
+            input = new FileInputStream( "config" + cAmbiente + ".properties" );
 
             // load a properties file
             prop.load( input );

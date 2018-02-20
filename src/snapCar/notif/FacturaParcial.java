@@ -62,6 +62,7 @@ public class FacturaParcial {
                     + " FROM   tVehiculo v \n"
                     + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
                     + " WHERE  v.cPoliza is not null \n"
+                    + " AND    v.bVigente = '1' \n"                    
                     + " AND    fnFechaCierreIni(v.dIniVigencia, 1) >= v.dIniVigencia \n"
                     + " AND    DATEDIFF(fnFechaCierreIni(v.dIniVigencia, 1),fnNow()) = ? \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );

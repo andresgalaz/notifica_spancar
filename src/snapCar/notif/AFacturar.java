@@ -62,7 +62,7 @@ public class AFacturar {
                     + ", u.cEmail, u.cNombre \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    + " WHERE nDiasAlCierre = ? \n"
+                    + " WHERE w.nDiasAlCierre = ? \n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
             PreparedStatement psSql = cnx.prepareStatement( cSql );

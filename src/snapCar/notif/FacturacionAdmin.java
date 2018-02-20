@@ -179,6 +179,7 @@ public class FacturacionAdmin {
         sb.append( "    <div class='divTableCell'>Email</div>\n" );
         sb.append( "    <div class='divTableCell'>Descuento</div>\n" );
         sb.append( "    <div class='divTableCell'>Fecha Facturación</div>\n" );
+        sb.append( "    <div class='divTableCell'>Días Sin Medición</div>\n" );
         sb.append( "  </div>\n" );
 
         for (int i = 0; i < data.size(); i++) {
@@ -195,6 +196,7 @@ public class FacturacionAdmin {
             sb.append( "    <div class='divTableCell'>" + m.get( "email" ) + "</div>\n" );
             sb.append( "    <div class='divTableCell'>" + m.get( "descuento" ) + "</div>\n" );
             sb.append( "    <div class='divTableCell'>" + m.get( "fecFacturacion" ) + "</div>\n" );
+            sb.append( "    <div class='divTableCell'>" + m.get( "diasSinMedicion" ) + "</div>\n" );
             sb.append( "  </div>\n" );
         }
         sb.append( "</div>\n" );

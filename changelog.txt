@@ -1,7 +1,14 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00006b =
+@ 19/02/2018 - AGALAZ
+ * Se agrega 'Días sin Mendición' al frente del mail de Administración
+   Factura.
+
 = v00006a =
+@ 09/02/2018 - AGALAZ
+ * En factura Parcial faltaba filtrar que los vehículos fueran Activos.
 @ 08/02/2018 - AGALAZ
  * Se agrega nDiasCierreAnt a tabla wMemoryCierreTransf, para el procedure
    prControlCierreTransferenciaInicioDef, con esto se mide la cantidad de
