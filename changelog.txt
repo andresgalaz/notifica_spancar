@@ -2,6 +2,8 @@
  * Agregar los mensajes que faltan
 
 = v00006b =
+@ 22/02/2018 - AGALAZ
+ * No se factura Pólizas TEST
 @ 19/02/2018 - AGALAZ
  * Se agrega 'Días sin Mendición' al frente del mail de Administración
    Factura.

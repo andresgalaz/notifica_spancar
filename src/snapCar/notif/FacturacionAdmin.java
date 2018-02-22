@@ -82,7 +82,7 @@ public class FacturacionAdmin {
                 + "      , v.dIniVigencia \n"
                 + " FROM   tVehiculo v \n"
                 + "        JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
-                + " WHERE  v.cPoliza is not null \n"
+                + " WHERE  ifnull(v.cPoliza,'TEST') <> 'TEST' \n"                
                 + " AND    v.bVigente = '1' \n"
                 + " AND    fnFechaCierreIni(v.dIniVigencia, 0) > v.dIniVigencia \n"
                 // Dias al cierre
