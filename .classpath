@@ -15,5 +15,10 @@
 	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.8.5.jar"/>
 	<classpathentry kind="lib" path="lib/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail-1.4.7.jar"/>
+	<classpathentry kind="lib" path="lib/fop-transcoder-allinone-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/batik-all-1.9.jar"/>
+	<classpathentry kind="lib" path="lib/xmlgraphics-commons-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis-ext-1.3.04.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/migraIntegrity"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

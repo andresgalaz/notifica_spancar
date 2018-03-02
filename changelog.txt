@@ -1,6 +1,13 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007a =
+@ 02/03/2018 - AGALAZ
+ * Se agregan procesos que corren en forma continua:
+   - Bienvenida
+   - Prorroga
+   - Certificado
+
 = v00006b =
 @ 22/02/2018 - AGALAZ
  * No se factura Pólizas TEST

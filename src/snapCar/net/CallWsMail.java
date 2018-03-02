@@ -80,6 +80,9 @@ public class CallWsMail {
             message.put( "to", lisTo );
             message.put( "tags", new String[] { cTag } );
 
+            if (mVars.containsKey( "subject" ))
+                message.put( "subject", mVars.get( "subject" ) );
+
             List<Map> globalMergeVars = new ArrayList<Map>();
             Iterator it = mVars.entrySet().iterator();
             while (it.hasNext()) {
@@ -118,21 +121,22 @@ public class CallWsMail {
             Map mError = null;
             try {
                 String cResp = sb.toString();
-                if( cResp.startsWith( "[" )){
+                if (cResp.startsWith( "[" )) {
                     List aResp = ConvertList.fromJsonString( cResp );
-                    if(aResp.size()>0)
+                    if (aResp.size() > 0)
                         mError = (Map) aResp.get( 0 );
                 } else
                     mError = ConvertMap.fromJsonString( sb.toString() );
             } catch (Exception e) {
                 throw new FrameworkException( "Error inesperado al procesar respuesta", e );
             }
-            if (mError != null && "sent".equals( mError.get( "status" )))
+            if (mError != null &&
+                    ("sent".equals( mError.get( "status" ) ) || "queued".equals( mError.get( "status" ) ))) {
                 logger.debug( "Se envió mensaje correctamente" );
-            else {
-                if(mError.containsKey( "name" ))
+            } else {
+                if (mError.containsKey( "name" ))
                     throw new FrameworkException( mError.get( "name" ) + "\n" + mError.get( "message" ) );
-                throw new FrameworkException( ConvertJSON.MapToString( mError ));
+                throw new FrameworkException( ConvertJSON.MapToString( mError ) );
             }
         } catch (MalformedURLException e) {
             throw new FrameworkException( "La URL del servidor API es errónea" );
@@ -144,10 +148,10 @@ public class CallWsMail {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Map> createAddressTo(String cNombre, String cEmail) throws FrameworkException {
         String wsMailBccAddress2 = Parametro.get( "ws_mail_bcc_address2" );
-       
+
         List<Map> lisTo = new ArrayList<Map>();
         Map m = new HashMap();
-        if(!ConvertString.isEmpty( wsMailBccAddress2 )){
+        if (!ConvertString.isEmpty( wsMailBccAddress2 )) {
             m.put( "email", wsMailBccAddress2 );
             m.put( "name", "Control Snapcar" );
             m.put( "type", "bcc" );
