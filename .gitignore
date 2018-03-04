@@ -5,3 +5,4 @@ notifica*.jar
 notifica*lib/
 **/nohup.out
 **/*~
+**/.DS_Store
