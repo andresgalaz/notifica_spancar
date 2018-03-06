@@ -76,7 +76,7 @@ public class Parametro {
             logger.info( "ws_mail_bcc_address2:" + prop.getProperty( "ws_mail_bcc_address2" ) );
 
             logger.info( "file_repos :" + prop.getProperty( "file_repos" ) );
-                        
+            logger.info( "factura_svg :" + prop.getProperty( "factura_svg" ) );
             logger.info( "mail_test :" + prop.getProperty( "mail_test" ) );
 
         } catch (IOException ex) {
