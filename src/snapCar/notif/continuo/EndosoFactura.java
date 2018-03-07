@@ -132,10 +132,7 @@ public class EndosoFactura {
                 String cEmail = (String) mVal.get( "cEmail" );
                 String cNombre = (String) mVal.get( "cNombre" );
 
-                mVal.put( "cNombre", mVal.get( "cNombre" ) + " " + mVal.get( "cNombre" ) );
-
                 // Ajustes
-                // String cNombre = cNombre.split( " " )[0];
                 mVal.put( "cNombre", utilHttp.truncaHastaEspacio( (String) mVal.get( "cNombre" ), 30 ) );
                 mVal.put( "cVehiculo", utilHttp.truncaHastaEspacio( (String) mVal.get( "cVehiculo" ), 25 ) );
                 mVal.put( "nDNI", utilHttp.separaMiles( mVal.get( "nDNI" ) ) );
@@ -176,7 +173,7 @@ public class EndosoFactura {
                 // Arma PDF, lo sube a S3 y envía el MAIL
                 List<Map> to = callMail.createAddressTo( cNombre, cEmail );
                 String cPeriodoFact = fmtPeriodo.format( ConvertDate.toDate( mVal.get( "dInicioVig" ) ) );
-                String cNombrePDF = mVal.get( "cPatente" ) +"_"+cPeriodoFact + ".pdf";
+                String cNombrePDF = mVal.get( "cPatente" ) + "_" + cPeriodoFact + ".pdf";
 
                 StrSubstitutor ss = new StrSubstitutor( mVal );
                 ss.setVariablePrefix( "{{" );

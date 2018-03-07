@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007b =
+@ 06/03/2018 - AGALAZ
+ * Cambios en la forma de cálculo
+
 = v00007a =
 @ 02/03/2018 - AGALAZ
  * Se agregan procesos que corren en forma continua:
