@@ -132,8 +132,6 @@ public class EndosoFactura {
                 String cEmail = (String) mVal.get( "cEmail" );
                 String cNombre = (String) mVal.get( "cNombre" );
 
-                mVal.put( "cNombre", mVal.get( "cNombre" ) + " " + mVal.get( "cNombre" ) );
-
                 // Ajustes
                 // String cNombre = cNombre.split( " " )[0];
                 mVal.put( "cNombre", utilHttp.truncaHastaEspacio( (String) mVal.get( "cNombre" ), 30 ) );
