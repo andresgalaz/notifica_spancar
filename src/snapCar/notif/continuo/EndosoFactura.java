@@ -175,7 +175,8 @@ public class EndosoFactura {
 
                 // Arma PDF, lo sube a S3 y envía el MAIL
                 List<Map> to = callMail.createAddressTo( cNombre, cEmail );
-                String cNombrePDF = mVal.get( "cPatente" ) + "_" + fmtPeriodo.format( ConvertDate.toDate( mVal.get( "dInicioVig" ) ) ) + ".pdf";
+                String cPeriodoFact = fmtPeriodo.format( ConvertDate.toDate( mVal.get( "dInicioVig" ) ) );
+                String cNombrePDF = mVal.get( "cPatente" ) +"_"+cPeriodoFact + ".pdf";
 
                 StrSubstitutor ss = new StrSubstitutor( mVal );
                 ss.setVariablePrefix( "{{" );
@@ -196,7 +197,7 @@ public class EndosoFactura {
                     mValMail.put( "cVehiculo", mVal.get( "cVehiculo" ) );
 
                     try {
-                        String cLinkPoliza = Parametro.get( "file_repos" ) + "poliza/" + cPatente + ".pdf";
+                        String cLinkPoliza = Parametro.get( "file_repos" ) + "poliza/" + cPatente + "_" + cPeriodoFact + ".pdf";
                         // Si el archivo no está presente, el mail no se envía, para no hacer el ridículo enviando mails
                         // con LINK rotos.
                         if (utilHttp.existeUrl( cLinkPoliza )) {
