@@ -1,6 +1,16 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007d =
+@ 08/03/2018 - AGALAZ
+ * Se agrega cFecFinLarga
+ * Se agrega template prorroga_noSync
+
+= v00007c =
+@ 07/03/2018 - AGALAZ
+ * Cambios en la forma de cálculo del impuesto que ajusta
+ * Se modifica en el Template SVG los días uso, no uso, punta.
+
 = v00007b =
 @ 06/03/2018 - AGALAZ
  * Cambios en la forma de cálculo

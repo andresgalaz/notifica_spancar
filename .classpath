@@ -18,7 +18,12 @@
 	<classpathentry kind="lib" path="lib/batik-all-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/xmlgraphics-commons-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis-ext-1.3.04.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/migraIntegrity"/>
 	<classpathentry kind="lib" path="lib/utilFrmwk_4.0a.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-1.11.180.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-core-1.11.180.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-s3-1.11.180.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.5.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.4.6.jar"/>
+	<classpathentry kind="lib" path="lib/stax2-api-4.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

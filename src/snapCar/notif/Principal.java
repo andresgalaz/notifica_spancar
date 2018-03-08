@@ -32,7 +32,7 @@ public class Principal {
             return;
         }
 
-        logger.info( "Inicio del proceso" );
+        logger.info( "Inicio del proceso v7.0c" );
 
         // Conecta a la base de datos
         TConexionDB cnx = new TConexionDB();

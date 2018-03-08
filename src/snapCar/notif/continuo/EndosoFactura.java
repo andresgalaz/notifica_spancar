@@ -77,8 +77,8 @@ public class EndosoFactura {
 
         try {
 
-            String cSqlAhorro = "SELECT \n"
-                    + "   ROUND(nPrima)  nPrima , ROUND(nPrimaSD)  nPrimaSD \n"
+            String cSqlAhorro = "SELECT ROUND(nDescuento) nDescuento\n"
+                    + " , ROUND(nPrima)  nPrima , ROUND(nPrimaSD)  nPrimaSD \n"
                     + " , ROUND(nPremio) nPremio, ROUND(nPremioSD) nPremioSD \n"
                     + " FROM  vFacturaProrroga \n"
                     + " WHERE cPatente = ? \n"
@@ -87,18 +87,19 @@ public class EndosoFactura {
             PreparedStatement psUpd = cnx.prepareStatement( "UPDATE integrity.tMovim SET bPdfProrroga = '1' WHERE pMovim = ?" );
 
             String cSqlPpal = "SELECT \n"
-                    + "       m.pMovim                                       , m.poliza                  as cPoliza \n"
-                    + "     , m.nro_patente              as cPatente         , m.fecha_emision           as dEmision \n"
-                    + "     , m.fecha_inicio_vig         as dInicioVig       , m.fecha_vencimiento       as dFinVig \n"
-                    + "     , m.sumaaseg                 as nSumaAsegurada   , m.desc_vehiculo           as cVehiculo \n"
-                    + "     , round(m.porcent_descuento) as nDescuento       , m.documento               as nDNI \n"
+                    + "       m.pMovim                                       , m.poliza                   as cPoliza \n"
+                    + "     , m.nro_patente              as cPatente         , m.fecha_emision            as dEmision \n"
+                    + "     , m.fecha_inicio_vig         as dInicioVig       , m.fecha_vencimiento        as dFinVig \n"
+                    + "     , m.sumaaseg                 as nSumaAsegurada   , m.desc_vehiculo            as cVehiculo \n"
+                    + "     , round(m.porcent_descuento) as nDescuento       , m.documento                as nDNI \n"
                     + "     , u.cEmail                                       , u.cNombre \n"
                     + "     , f.dInicio                                      , f.dFin \n"
-                    + "     , ROUND(f.nKms)              as nKms             , ROUND(f.nScore)           as nScore\n"
+                    + "     , ROUND(f.nKms)              as nKms             , ROUND(f.nScore)            as nScore\n"
                     + "     , f.nQViajes                                     , f.nQFrenada \n"
                     + "     , f.nQAceleracion                                , f.nQVelocidad \n"
                     + "     , f.nQCurva                                      , f.nDiasPunta \n"
-                    + "     , f.nDiasUso                                     , f.nDiasSinMedicion \n"
+                    + "     , f.nDiasUso - f.nDiasPunta  as nDiasNoPunta     , f.nDiasSinMedicion \n"
+                    + "     , datediff(f.dFin, f.dInicio) - f.nDiasUso - f.nDiasSinMedicion               as nDiasSinUso \n"
                     + " FROM  integrity.tMovim m \n"
                     + "       INNER JOIN tVehiculo v ON v.cPatente = m.nro_patente AND v.bVigente = '1' \n"
                     + "       INNER JOIN tUsuario  u ON u.pUsuario = v.fUsuarioTitular \n"
@@ -141,27 +142,40 @@ public class EndosoFactura {
                 /* AHORRO */
                 psAhorro.setString( 1, cPatente );
                 ResultSet rsAhorro = psAhorro.executeQuery();
+                int nDescuento = 0;
                 int nAhorro = 0;
                 int nAhorroAcum = 0;
-                int nPrima = 0;
-                int nPrimaSD = 0;
+                // int nPrima = 0;
+                // int nPrimaSD = 0;
                 int nPremio = 0;
                 int nPremioSD = 0;
                 while (rsAhorro.next()) {
-                    // Va primero, porque no se quiere inluir el último registro en el acumulado
-                    nAhorroAcum += nAhorro;
                     // Se leen todos pero solo interesa mantener la última fila
-                    nPrima = rsAhorro.getInt( "nPrima" );
-                    nPrimaSD = rsAhorro.getInt( "nPrimaSD" );
+                    nDescuento = rsAhorro.getInt( "nDescuento" );
+                    // nPrima = rsAhorro.getInt( "nPrima" );
                     nPremio = rsAhorro.getInt( "nPremio" );
-                    nPremioSD = rsAhorro.getInt( "nPremioSD" );
-                    nAhorro = nPremioSD - nPremio;
+                    if (nDescuento == 0) {
+                        // nPrimaSD = nPrima;
+                        nPremioSD = nPremio;
+                        nAhorro = 0;
+                    } else {
+                        // nPrimaSD = rsAhorro.getInt( "nPrimaSD" );
+                        nPremioSD = rsAhorro.getInt( "nPremioSD" );
+                        nAhorro = nPremioSD - nPremio;
+                    }
+                    nAhorroAcum += nAhorro;
                 }
                 rsAhorro.close();
-                // Inpuesto = premio - prima
-                int nImpuestoAhorro = (nPremioSD - nPrimaSD) - (nPremio - nPrima);
-                // Se resta del ahorro el ahorro de impuesto
-                int nAhorroBruto = nAhorro - nImpuestoAhorro;
+                // Valores para forzar el descuento al premio y no la prima
+                int nImpuestoAhorro = 0;
+                int nAhorroBruto = 0;
+                if (nDescuento != 0) {
+                    // Esto es para mostrar el descuento como si fuera en el premio ( y no la prima técnica como en
+                    // realida es ). Es una ocurrencia de Bruno.
+                    nAhorroBruto = (int) Math.round( nPremioSD * nDescuento / 100.0 );
+                    // Esto no tiene ningún sentido, pero Bruno insiste
+                    nImpuestoAhorro = nAhorro - nAhorroBruto;
+                }
                 // Introduce los valores de ahorro y premio a mVal
                 mVal.put( "nAhorro", utilHttp.separaMiles( nAhorro ) );
                 mVal.put( "nAhorroAcumulado", utilHttp.separaMiles( nAhorroAcum ) );
@@ -169,7 +183,6 @@ public class EndosoFactura {
                 mVal.put( "nPremioSD", utilHttp.separaMiles( nPremioSD ) );
                 mVal.put( "nAhorroBruto", utilHttp.separaMiles( nAhorroBruto ) );
                 mVal.put( "nImpuestoAhorro", utilHttp.separaMiles( nImpuestoAhorro ) );
-
                 // Arma PDF, lo sube a S3 y envía el MAIL
                 List<Map> to = callMail.createAddressTo( cNombre, cEmail );
                 String cPeriodoFact = fmtPeriodo.format( ConvertDate.toDate( mVal.get( "dInicioVig" ) ) );
@@ -188,7 +201,9 @@ public class EndosoFactura {
                     // Arma mail para enviar
                     Map<String, Object> mValMail = new HashMap<String, Object>();
                     mValMail.put( "cPrimerNombre", utilHttp.primerNombre( (String) mVal.get( "cNombre" ) ) );
-                    mValMail.put( "cFecFin", fmtLargo.format( mVal.get( "dFin" ) ) );
+                    mValMail.put( "cFecInicio", mVal.get( "cFecInicio" ) );
+                    mValMail.put( "cFecFin", mVal.get( "cFecFin" ) );
+                    mValMail.put( "cFecFinLarga", fmtLargo.format( mVal.get( "dFin" ) ) );
                     mValMail.put( "nDescuento", mVal.get( "nDescuento" ) );
                     mValMail.put( "nAhorro", nAhorro );
                     mValMail.put( "cVehiculo", mVal.get( "cVehiculo" ) );
@@ -198,19 +213,24 @@ public class EndosoFactura {
                         // Si el archivo no está presente, el mail no se envía, para no hacer el ridículo enviando mails
                         // con LINK rotos.
                         if (utilHttp.existeUrl( cLinkPoliza )) {
-                            int nDescuento = ConvertNumber.toInteger( mVal.get( "nDescuento" ) );
+                            // int nDescuento = ConvertNumber.toInteger( mVal.get( "nDescuento" ) );
                             int nScore = ConvertNumber.toInteger( mVal.get( "nScore" ) );
+                            int nDiasSinMedicion = ConvertNumber.toInteger( mVal.get( "nDiasSinMedicion" ) );
 
                             mValMail.put( "cAsunto", cPatente );
                             mValMail.put( "cLinkProrroga", Parametro.get( "file_repos" ) + remotePath + cNombrePDF );
                             mValMail.put( "cLinkPoliza", cLinkPoliza );
 
+                            // callMail.ejecuta( "prorroga_noSync", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_10_40", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_10_90a", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_10_90b", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_recargo", "prorroga", to, mValMail );
 
-                            if (nDescuento > 10) {
+                            if (nDiasSinMedicion >= 15) {
+                                // Descuento 0 sin sincronización
+                                callMail.ejecuta( "prorroga_noSync", "prorroga", to, mValMail );
+                            } else if (nDescuento > 10) {
                                 // Descuento entre 10 y 40
                                 callMail.ejecuta( "prorroga_10_40", "prorroga", to, mValMail );
                             } else if (nDescuento >= 0) {
