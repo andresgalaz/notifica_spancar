@@ -227,7 +227,7 @@ public class EndosoFactura {
                             // callMail.ejecuta( "prorroga_10_90b", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_recargo", "prorroga", to, mValMail );
 
-                            if (nDiasSinMedicion >= 15) {
+                            if (nDiasSinMedicion >= 15 && nDescuento <= 0 ) {
                                 // Descuento 0 sin sincronización
                                 callMail.ejecuta( "prorroga_noSync", "prorroga", to, mValMail );
                             } else if (nDescuento > 10) {
