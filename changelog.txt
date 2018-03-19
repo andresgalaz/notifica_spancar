@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007e =
+@ 19/03/2018 - AGALAZ
+ * Se cambia condición WHERE envío de Certificados 
+
 = v00007d =
 @ 08/03/2018 - AGALAZ
  * Se agrega cFecFinLarga

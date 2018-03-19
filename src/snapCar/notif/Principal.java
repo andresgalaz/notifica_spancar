@@ -143,6 +143,15 @@ public class Principal {
 
     private static void callContinuo(ConexionHelper cnxHlp) {
         try {
+            CertificadoCobertura notif = new CertificadoCobertura( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de certificados de cobertura", e );
+        }
+
+        try {
             EndosoFactura notif = new EndosoFactura( cnxHlp.getConnection() );
             notif.procesa();
             cnxHlp.getConnection().commit();
@@ -158,15 +167,6 @@ public class Principal {
         } catch (Exception e) {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de pólizas nuevas", e );
-        }
-
-        try {
-            CertificadoCobertura notif = new CertificadoCobertura( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de certificados de cobertura", e );
         }
 
     }

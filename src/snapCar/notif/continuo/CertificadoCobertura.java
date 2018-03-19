@@ -48,9 +48,9 @@ public class CertificadoCobertura {
         String cSql = " SELECT v.pVehiculo, v.cPatente, u.cNombre, u.cEmail, IFNULL(m.desc_vehiculo, 'vehículo') cVehiculo \n"
                 + " FROM  tVehiculo v \n"
                 + "       JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
-                + "       LEFT JOIN integrity.tMovim m ON m.pMovim = v.fMovimCreacion \n"
+                + "       JOIN integrity.tMovim m ON m.pMovim = v.fMovimCreacion \n"
                 + " WHERE v.bPdfCobertura = '0' \n"
-                + " AND   IFNULL(v.cPoliza,'TEST') <> 'TEST' \n"
+                + " AND IFNULL(v.cPoliza,'VACIO') <> 'TEST' \n"
                 + " AND   v.bVigente = '1' \n";
         PreparedStatement psSql = cnx.prepareStatement( cSql );
         ResultSet rs = psSql.executeQuery();
@@ -59,7 +59,7 @@ public class CertificadoCobertura {
         CallWsMail callMail = new CallWsMail();
         while (rs.next()) {
             String cPatente = rs.getString( "cPatente" );
-            String cUrl = Parametro.get( "file_repos" )  + "poliza/" + cPatente + "_certificado.pdf";
+            String cUrl = Parametro.get( "file_repos" ) + "poliza/" + cPatente + "_certificado.pdf";
             // Si el archivo no está presente, el mail no se envía, para no hacer el ridículo enviando mails con LINK
             // rotos.
             if (!utilHttp.existeUrl( cUrl ))
