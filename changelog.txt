@@ -2,6 +2,8 @@
  * Agregar los mensajes que faltan
 
 = v00007e =
+@ 22/03/2018 - AGALAZ
+ * No sincro se llama a Control Fecha con Periodo=0
 @ 19/03/2018 - AGALAZ
  * Se cambia condición WHERE envío de Certificados 
 

@@ -52,7 +52,7 @@ public class NoSincro {
             {
                 // Crea tabla temporal wMemoryCierreTransf, se usa el parámetro 1, indicando que se quiere los que van a
                 // vencer
-                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicioDef(1)}" );
+                CallableStatement call = cnx.prepareCall( "{ call prControlCierreTransferenciaInicioDef(0)}" );
                 call.execute();
                 call.close();
             }
