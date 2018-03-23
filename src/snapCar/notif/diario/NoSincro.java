@@ -32,7 +32,7 @@ import snapCar.net.CallWsMail;
  *
  */
 public class NoSincro {
-    private static Logger    logger         = Logger.getLogger( NoSincro.class );
+    private static Logger    logger            = Logger.getLogger( NoSincro.class );
     private Connection       cnx;
     private static final int DIAS_AL_CIERRE_01 = 10;
     private static final int DIAS_AL_CIERRE_02 = 20;
@@ -61,6 +61,9 @@ public class NoSincro {
                     + ", w.dProximoCierreFin		dFin \n"
                     + ", w.nDiasNoSincro \n"
                     + ", u.cEmail, u.cNombre \n"
+                    + ", GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
+                    + "          , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
+                    + "          , w.dIniVigencia ) dUltSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE nDiasAlCierre in ( ?, ? ) \n"
@@ -84,6 +87,7 @@ public class NoSincro {
 
                 Date dInicio = ConvertDate.toDate( rsNotif.getDate( "dInicio" ) );
                 Date dFin = ConvertDate.toDate( rsNotif.getDate( "dFin" ) );
+                Date dUltSincro = ConvertDate.toDate( rsNotif.getDate( "dUltSincro" ) );
 
                 Map<String, String> mReg = new HashMap<String, String>();
                 mReg.put( "cPatente", cPatente );
@@ -93,6 +97,7 @@ public class NoSincro {
                 mReg.put( "cDiaCierre", fmtDia.format( dFin ) );
                 mReg.put( "cNombre", cPrimerNombre );
                 mReg.put( "nDiasNoSincro", String.valueOf( nDiasNoSincro ) );
+                mReg.put( "cFecUltSincro", fmtSimple.format( dUltSincro ) );
 
                 try {
                     callMail.ejecuta( "no_sincro_nDias", "no_sincro", to, mReg );

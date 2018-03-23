@@ -82,6 +82,16 @@ public class Principal {
      * @param cnxHlp
      */
     private static void callDiaria(ConexionHelper cnxHlp) {
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            NoSincro notif = new NoSincro( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
+        }
+
         // Proceso notificaciones a clientes que están a punto de facturar
         try {
             AFacturar notif = new AFacturar( cnxHlp.getConnection() );
@@ -110,16 +120,6 @@ public class Principal {
         } catch (Exception e) {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
-        }
-
-        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
-        try {
-            NoSincro notif = new NoSincro( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
         }
 
         Mail mail = null;
