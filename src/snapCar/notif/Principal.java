@@ -84,6 +84,16 @@ public class Principal {
     private static void callDiaria(ConexionHelper cnxHlp) {
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
+            CierreFactura notif = new CierreFactura( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
+        }
+
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
             NoSincro notif = new NoSincro( cnxHlp.getConnection() );
             notif.procesa();
             cnxHlp.getConnection().commit();
@@ -112,16 +122,6 @@ public class Principal {
             logger.error( "Al procesar notificaciones de clientes a facturar", e );
         }
 
-        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
-        try {
-            CierreFactura notif = new CierreFactura( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
-        }
-
         Mail mail = null;
         try {
             // Se instancia servicio SMTP mail
@@ -143,21 +143,21 @@ public class Principal {
 
     private static void callContinuo(ConexionHelper cnxHlp) {
         try {
-            CertificadoCobertura notif = new CertificadoCobertura( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de certificados de cobertura", e );
-        }
-
-        try {
             EndosoFactura notif = new EndosoFactura( cnxHlp.getConnection() );
             notif.procesa();
             cnxHlp.getConnection().commit();
         } catch (Exception e) {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de prorrogas", e );
+        }
+
+        try {
+            CertificadoCobertura notif = new CertificadoCobertura( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de certificados de cobertura", e );
         }
 
         try {

@@ -108,7 +108,7 @@ public class EndosoFactura {
                     // Como la medición se hace 7 días antes del cierre, la fecha d evigencia de la prorroga siempre
                     // debería estar dentro rango de fechas de medición
                     + "                             AND (f.dFin + INTERVAL 7 DAY) BETWEEN m.fecha_inicio_vig AND m.fecha_vencimiento \n"
-                    + " WHERE m.codEndoso = '9900' \n"
+                    + " WHERE m.cod_endoso = '9900' \n"
                     + " AND   m.bPdfProrroga = '0' \n"
                     + " ORDER BY cPatente, dEmision desc \n";
 
