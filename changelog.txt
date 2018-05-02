@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007g =
+@ 02/05/2018 - AGALAZ
+ * Se corrige error de UNSIGNED en EndosoFactura
+
 = v00007f =
 @ 26/04/2018 - AGALAZ
  * Se cambió tMovim cod_endoso,codendoso -> endoso,cod_endoso
