@@ -111,7 +111,7 @@ public class EndosoFactura {
                     + "       INNER JOIN tUsuario  u ON u.pUsuario = v.fUsuarioTitular \n"
                     + "       INNER JOIN tFactura  f ON f.pVehiculo = v.pVehiculo \n"
                     + "                             AND f.pTpFactura = 1 \n"
-                    // Como la medición se hace 7 días antes del cierre, la fecha d evigencia de la prorroga siempre
+                    // Como la medición se hace 7 días antes del cierre, la fecha de vigencia de la prorroga siempre
                     // debería estar dentro rango de fechas de medición
                     + "                             AND (f.dFin + INTERVAL 7 DAY) BETWEEN m.fecha_inicio_vig AND m.fecha_vencimiento \n"
                     + " WHERE m.cod_endoso = '9900' \n"
