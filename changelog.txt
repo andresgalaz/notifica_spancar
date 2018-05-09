@@ -1,6 +1,11 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00007h =
+@ 09/05/2018 - AGALAZ
+ * Se modifica EndosoFactura para cuando s un endoso de prorroga de
+   un periodo previo. El problema estaba en los acumuladores.
+
 = v00007g =
 @ 08/05/2018 - AGALAZ
  * Se agrega clase CallPushService

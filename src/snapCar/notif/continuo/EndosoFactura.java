@@ -82,6 +82,7 @@ public class EndosoFactura {
                     + " , ROUND(nPremio) nPremio, ROUND(nPremioSD) nPremioSD \n"
                     + " FROM  vFacturaProrroga \n"
                     + " WHERE cPatente = ? \n"
+                    + " AND   dInicio <= ? \n"
                     + " ORDER BY dEmision \n";
             PreparedStatement psAhorro = cnx.prepareStatement( cSqlAhorro );
             PreparedStatement psUpd = cnx.prepareStatement( "UPDATE integrity.tMovim SET bPdfProrroga = '1' WHERE pMovim = ?" );
@@ -133,8 +134,9 @@ public class EndosoFactura {
 
                 // Recupera PK
                 int pMovim = (int) mVal.get( "pMovim" );
-                // Patente
+                // Patente y Periodo
                 String cPatente = (String) mVal.get( "cPatente" );
+                Object dInicioVig = ConvertDate.toSqlDate( mVal.get( "dInicioVig" ));
                 // Recupera Email a enviar
                 String cEmail = (String) mVal.get( "cEmail" );
                 String cNombre = (String) mVal.get( "cNombre" );
@@ -147,6 +149,7 @@ public class EndosoFactura {
 
                 /* AHORRO */
                 psAhorro.setString( 1, cPatente );
+                psAhorro.setObject( 2, dInicioVig );
                 ResultSet rsAhorro = psAhorro.executeQuery();
                 int nDescuento = 0;
                 int nAhorro = 0;
