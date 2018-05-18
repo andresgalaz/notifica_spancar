@@ -18,6 +18,7 @@ import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertDate;
 import prg.util.cnv.ConvertException;
 import snapCar.net.CallWsMail;
+import snapCar.net.CallPushService;
 
 /**
  * <p>
@@ -81,7 +82,11 @@ public class CierreFactura {
             ResultSet rsNotif = psSql.executeQuery();
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
+            // Prepara Webservice envía Push
+            CallPushService callPush = new CallPushService();
+
             while (rsNotif.next()) {
+            	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
@@ -98,6 +103,21 @@ public class CierreFactura {
                 mReg.put( "nDiasNoSincro", String.valueOf( nDiasNoSincro ) );
 
                 try {
+                    /** 
+                     * Envía push notification cuando al usuario
+                     * le cerró el periodo y no sincronizó.
+                     * @author Rodrigo Sobrero
+                     * @since 2018-05-17
+                     */
+
+                	if (nDiasNoSincro > 1) {
+                		callPush.envia( nfUsuarioTitular, "Hoy cerró tu periodo de facturación", "¡" + cPrimerNombre + ", hoy cerró tu periodo de facturación!⏰ Sincronizá para obtener tu descuento.💸", "", null, null );
+                	}
+                	/*
+                	else if (nDiasNoSincro > 2) {
+                		callPush.envia( nfUsuarioTitular, "Tenés días pendientes de sincronización", "¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰", "", null, null );
+                	}
+                	*/
                     callMail.ejecuta( "cerro_periodo_factura", "cerro_periodo", to, mReg );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );

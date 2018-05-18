@@ -1,0 +1,345 @@
+{
+    // Utilizar IntelliSense para aprender acerca de los posibles atributos.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos 
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Principal<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "snapCar.notif.Principal",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.chainsaw.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PropertyPrinter<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.config.PropertyPrinter",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-LF5Appender<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.lf5.LF5Appender",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-StartLogFactor5<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.lf5.StartLogFactor5",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-JMSSink<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.net.JMSSink",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SimpleSocketServer<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.net.SimpleSocketServer",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SocketServer<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.net.SocketServer",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Roller<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.log4j.varia.Roller",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DocsConnectionPropsHelper<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.mysql.jdbc.DocsConnectionPropsHelper",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ErrorMappingsDocGenerator<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.mysql.jdbc.util.ErrorMappingsDocGenerator",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PropertiesDocGenerator<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.mysql.jdbc.util.PropertiesDocGenerator",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TimezoneDump<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.mysql.jdbc.util.TimezoneDump",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-VersionFSHierarchyMaker<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.mysql.jdbc.util.VersionFSHierarchyMaker",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZoneInfoCompiler<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.joda.time.tz.ZoneInfoCompiler",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PFMReader<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.fop.fonts.apps.PFMReader",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TTFReader<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.fop.fonts.apps.TTFReader",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-OpenFont<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.fop.fonts.truetype.OpenFont",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>(1)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.apps.rasterizer.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>(2)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.apps.slideshow.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>(3)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.apps.svgbrowser.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>(4)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.apps.svgpp.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<notifica>(5)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.apps.ttf2svg.Main",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-JAffineTransformChooser<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.ext.swing.JAffineTransformChooser",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SVGFont<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.svggen.font.SVGFont",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PrintTranscoder<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.transcoder.print.PrintTranscoder",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-WMFTranscoder<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.transcoder.wmf.tosvg.WMFTranscoder",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ClassFileUtilities<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.util.ClassFileUtilities",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-CSSMediaPanel<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.apache.batik.util.gui.CSSMediaPanel",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-AESSymetricCrypto<notifica>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "prg.util.sec.AESSymetricCrypto",
+            "projectName": "notifica",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 0
+        }
+    ]
+}

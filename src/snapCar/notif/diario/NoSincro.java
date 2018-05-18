@@ -18,6 +18,7 @@ import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertDate;
 import prg.util.cnv.ConvertException;
 import snapCar.net.CallWsMail;
+import snapCar.net.CallPushService;
 
 /**
  * <p>
@@ -76,7 +77,11 @@ public class NoSincro {
             ResultSet rsNotif = psSql.executeQuery();
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
+            // Prepara Webservie envía Push
+            CallPushService callPush = new CallPushService();
+    
             while (rsNotif.next()) {
+            	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
@@ -98,9 +103,19 @@ public class NoSincro {
                 mReg.put( "cNombre", cPrimerNombre );
                 mReg.put( "nDiasNoSincro", String.valueOf( nDiasNoSincro ) );
                 mReg.put( "cFecUltSincro", fmtSimple.format( dUltSincro ) );
-
+                
                 try {
                     callMail.ejecuta( "no_sincro_nDias", "no_sincro", to, mReg );
+
+                    /** 
+                     * Envía push notification cuando el usuario
+                     * no sincroniza hace más de 3 días.
+                     * @author Rodrigo Sobrero
+                     * @since 2018-05-16
+                     */
+
+                    if (nDiasNoSincro > 3)
+                    	callPush.envia( nfUsuarioTitular, "¡Sincronizá tu viajes!", "¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días. Hacelo para conseguir tu descuento.", "", null, null );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }

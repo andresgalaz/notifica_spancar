@@ -18,6 +18,7 @@ import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertDate;
 import prg.util.cnv.ConvertException;
 import snapCar.net.CallWsMail;
+import snapCar.net.CallPushService;
 
 /**
  * <p>
@@ -70,7 +71,11 @@ public class AFacturar {
             ResultSet rsNotif = psSql.executeQuery();
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
+            // Prepara Webservie envía Push
+            CallPushService callPush = new CallPushService();
+
             while (rsNotif.next()) {
+            	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
@@ -92,11 +97,29 @@ public class AFacturar {
                 mReg.put( "nDiasNoSincro", String.valueOf( nDiasNoSincro ) );
 
                 try {
+                    /** 
+                     * Envía push notification cuando el usuario
+                     * no sincroniza hace más de 3 días y su perdiodo
+                     * de facturación cierran en 2 días.
+                     * @author Rodrigo Sobrero
+                     * @since 2018-05-17
+                     */
+
+                	if (nDiasNoSincro > 3) {
+                		callPush.envia( nfUsuarioTitular, "Cierra tu periodo de facturación", "!" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.", "", null, null );
+                	} else if (nDiasNoSincro >= 5) {
+                		callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
+                	} else {
+                		callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
+                	}
+
+                	/*
                     if (nDiasNoSincro >= 5) {
                         callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
                     } else {
                         callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
                     }
+                    */
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }
