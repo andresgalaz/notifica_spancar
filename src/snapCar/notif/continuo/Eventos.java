@@ -21,7 +21,7 @@ import snapCar.net.CallPushService;
 
 /**
  * Envía push notifications
- * cuando detecta un exceso de velocidad
+ * cuando detecta un exceso de velocidad.
  * @author Rodrigo Sobrero
  * @since 2018-05-18
  */
@@ -29,11 +29,11 @@ import snapCar.net.CallPushService;
 public class Eventos {
 	private static Logger	logger	= Logger.getLogger( Eventos.class );
 	private Connection		cnx;
-	
+
 	public Eventos(Connection cnx) {
 		this.cnx = cnx;
 	}
-	
+
 	public void procesa() throws FrameworkException {
 		try {
 			String cSql = "SELECT fUsuario \n"
@@ -41,17 +41,17 @@ public class Eventos {
 					+ "		, nValor \n"
 					+ "		, pEvento \n"
 					+ "FROM score.tEvento \n"
-					+ "WHERE fTpEvento = 3 \n"
-					+ "AND nVelocidadMaxima > nValor \n"
-					+ "AND tModif = fnNow() \n"
+					+ "WHERE fTpEvento = 5 \n"
+					+ "AND nVelocidadMaxima < nValor \n"
+					+ "AND tModif >= DATE(fnNow() - INTERVAL 2 DAY) \n"
 					+ "AND nNotificacion = 0";
-			
+
 			PreparedStatement psSql = cnx.prepareStatement( cSql );
 			ResultSet rsNotif = psSql.executeQuery();
-			
+
             // Prepara Webservice envía Push
             CallPushService callPush = new CallPushService();
-            
+
             while(rsNotif.next()) {
             	int fUsuario = rsNotif.getInt( "fUsuario" );
             	int nVelocidadMaxima = rsNotif.getInt( "nVelocidadMaxima" );
