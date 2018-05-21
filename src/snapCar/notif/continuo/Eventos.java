@@ -62,11 +62,11 @@ public class Eventos {
             		callPush.envia( fUsuario, "¡Cuidado!", "Registramos un exceso de velocidad a ⚠️" + nValor + " km/h ⚠️ en una zona de " + nVelocidadMaxima + " km/h.", "eventos", null, pEvento );
             		psSql.setInt( 1, 1 );
             	} catch (FrameworkException e) {
-            		logger.error( "" );
+            		logger.error( "Error al envíar push notification al usuario con id " + fUsuario, e );
             	}
             }
 		} catch (SQLException e) {
-			logger.error( "", e );
+			logger.error( "Error al leer las notificaciones con eventos tipo 5", e );
 			throw new RuntimeException( e );
 		}
 	}
