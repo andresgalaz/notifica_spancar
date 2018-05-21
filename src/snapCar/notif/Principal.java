@@ -84,22 +84,22 @@ public class Principal {
     private static void callDiaria(ConexionHelper cnxHlp) {
         // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
         try {
-            CierreFactura notif = new CierreFactura( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
-        }
-
-        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
-        try {
             NoSincro notif = new NoSincro( cnxHlp.getConnection() );
             notif.procesa();
             cnxHlp.getConnection().commit();
         } catch (Exception e) {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de clientes que no sincronizaron", e );
+        }
+
+        // Proceso notificaciones a clientes con cierre y que aún tienen días sin sincronizar
+        try {
+            CierreFactura notif = new CierreFactura( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de clientes al cierre de factura", e );
         }
 
         // Proceso notificaciones a clientes que están a punto de facturar
