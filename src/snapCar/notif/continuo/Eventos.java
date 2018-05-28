@@ -48,7 +48,7 @@ public class Eventos {
 
             while(rsNotif.next()) {
             	int fUsuario = rsNotif.getInt( "fUsuario" );
-            	int nVelocidadMaxima = rsNotif.getInt( "nVelocidadMaxima" );
+            	// int nVelocidadMaxima = rsNotif.getInt( "nVelocidadMaxima" );
             	int nValor = rsNotif.getInt( "nValor" );
             	int pEvento = rsNotif.getInt( "pEvento" );
 
