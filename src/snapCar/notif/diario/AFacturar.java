@@ -60,6 +60,7 @@ public class AFacturar {
                     + ", w.dProximoCierreIni dInicio \n"
                     + ", w.dProximoCierreFin dFin \n"
                     + ", w.nDiasNoSincro \n"
+                    + ", w.fUsuarioTitular \n"
                     + ", u.cEmail, u.cNombre \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
@@ -100,26 +101,18 @@ public class AFacturar {
                     /** 
                      * Envía push notification cuando el usuario
                      * no sincroniza hace más de 3 días y su perdiodo
-                     * de facturación cierran en 2 días.
+                     * de facturación cierra en 2 días.
                      * @author Rodrigo Sobrero
                      * @since 2018-05-17
                      */
 
                 	if (nDiasNoSincro > 3) {
-                		callPush.envia( nfUsuarioTitular, "Cierra tu periodo de facturación", "!" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.", "", null, null );
+                		callPush.envia( nfUsuarioTitular, "Cierra tu periodo de facturación", "¡" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.", "", null, null );
                 	} else if (nDiasNoSincro >= 5) {
                 		callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
                 	} else {
                 		callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
                 	}
-
-                	/*
-                    if (nDiasNoSincro >= 5) {
-                        callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
-                    } else {
-                        callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
-                    }
-                    */
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }

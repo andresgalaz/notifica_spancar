@@ -16,6 +16,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="snapCar.notif.Principal"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="continuo"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="diario"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="notifica"/>
 </launchConfiguration>

@@ -58,6 +58,7 @@ public class CierreFactura {
                     + "     , DATE_FORMAT(w.dProximoCierreIni, '%d/%m/%Y')    dInicio \n"
                     + "     , DATE_FORMAT(w.dProximoCierreFin, '%d/%m/%Y')    dFin \n"
                     + "     , w.nDiasNoSincro \n"
+                    + "		, w.fUsuarioTitular \n"
                     + "     , u.cEmail, u.cNombre                                              cNombre \n"
                     /*
                      * Fecha : 29/01/2018
@@ -110,14 +111,12 @@ public class CierreFactura {
                      * @since 2018-05-17
                      */
 
-                	if (nDiasNoSincro > 1) {
+                	if (nDiasNoSincro == 1) {
                 		callPush.envia( nfUsuarioTitular, "Hoy cerró tu periodo de facturación", "¡" + cPrimerNombre + ", hoy cerró tu periodo de facturación!⏰ Sincronizá para obtener tu descuento.💸", "", null, null );
-                	}
-                	/*
-                	else if (nDiasNoSincro > 2) {
+                	} else if (nDiasNoSincro >= 2) {
                 		callPush.envia( nfUsuarioTitular, "Tenés días pendientes de sincronización", "¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰", "", null, null );
                 	}
-                	*/
+
                     callMail.ejecuta( "cerro_periodo_factura", "cerro_periodo", to, mReg );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );

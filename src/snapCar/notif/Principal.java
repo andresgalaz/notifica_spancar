@@ -15,6 +15,7 @@ import snapCar.notif.config.Parametro;
 import snapCar.notif.continuo.CertificadoCobertura;
 import snapCar.notif.continuo.EndosoFactura;
 import snapCar.notif.continuo.Poliza;
+import snapCar.notif.continuo.Eventos;
 import snapCar.notif.diario.AFacturar;
 import snapCar.notif.diario.CierreFactura;
 import snapCar.notif.diario.FacturaParcial;
@@ -167,6 +168,22 @@ public class Principal {
         } catch (Exception e) {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de pólizas nuevas", e );
+        }
+
+        /** 
+         * Envía push notification cuando el usuario
+         * tiene evento de exceso de velocidad.
+         * @author Rodrigo Sobrero
+         * @since 2018-05-24
+         */
+
+        try {
+        	Eventos notif = new Eventos( cnxHlp.getConnection() );
+        	notif.procesa();
+        	cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+        	rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de eventos", e );
         }
 
     }

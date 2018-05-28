@@ -61,12 +61,14 @@ public class NoSincro {
                     + ", w.dProximoCierreIni		dInicio \n"
                     + ", w.dProximoCierreFin		dFin \n"
                     + ", w.nDiasNoSincro \n"
+                    + ", w.fUsuarioTitular \n"
                     + ", u.cEmail, u.cNombre \n"
                     + ", GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
                     + "          , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
                     + "          , w.dIniVigencia ) dUltSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
+                    // + " WHERE CPATENTE = 'JBH851' \n"
                     + " WHERE nDiasAlCierre in ( ?, ? ) \n"
                     + " AND   w.nDiasNoSincro > 9 "
                     + " AND   w.cPoliza is not null \n"
@@ -115,7 +117,7 @@ public class NoSincro {
                      */
 
                     if (nDiasNoSincro > 3)
-                    	callPush.envia( nfUsuarioTitular, "¡Sincronizá tu viajes!", "¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días. Hacelo para conseguir tu descuento.", "", null, null );
+                    	callPush.envia( nfUsuarioTitular, "¡Sincronizá tu viajes!", "¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días! Hacelo para conseguir tu descuento.", "", null, null );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }
