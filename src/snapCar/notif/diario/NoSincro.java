@@ -35,8 +35,8 @@ import snapCar.net.CallPushService;
 public class NoSincro {
     private static Logger    logger            = Logger.getLogger( NoSincro.class );
     private Connection       cnx;
-    // private static final int DIAS_AL_CIERRE_01 = 10;
-    // private static final int DIAS_AL_CIERRE_02 = 20;
+    private static final int DIAS_AL_CIERRE_01 = 10;
+    private static final int DIAS_AL_CIERRE_02 = 20;
 
     public NoSincro(Connection cnx) {
         this.cnx = cnx;
@@ -58,7 +58,6 @@ public class NoSincro {
                 call.close();
             }
 
-            /*
             String cSql = "SELECT w.cPatente \n"
                     + "		, w.dProximoCierreIni		dInicio \n"
                     + "		, w.dProximoCierreFin		dFin \n"
@@ -75,27 +74,10 @@ public class NoSincro {
                     + " AND   w.nDiasNoSincro > 9 "
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
-            */
             
-            String cSql = "SELECT w.cPatente \n"
-                    + "		, w.dProximoCierreIni		dInicio \n"
-                    + "		, w.dProximoCierreFin		dFin \n"
-                    + "		, w.nDiasNoSincro \n"
-                    + "		, w.fUsuarioTitular \n"
-                    + "		, w.pVehiculo \n"
-                    + "		, u.cEmail, u.cNombre \n"
-                    + "		, GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "     , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
-                    + "     , w.dIniVigencia ) dUltSincro \n"
-                    + " FROM  wMemoryCierreTransf w \n"
-                    + " JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    + " WHERE cPatente = 'JBH851' \n"
-                    + " AND   w.cPoliza is not null \n"
-                    + " AND   w.bVigente = '1' \n";
-
             PreparedStatement psSql = cnx.prepareStatement( cSql );
-            // psSql.setInt( 1, DIAS_AL_CIERRE_01 );
-            // psSql.setInt( 2, DIAS_AL_CIERRE_02 );
+            psSql.setInt( 1, DIAS_AL_CIERRE_01 );
+            psSql.setInt( 2, DIAS_AL_CIERRE_02 );
             ResultSet rsNotif = psSql.executeQuery();
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
