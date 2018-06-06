@@ -57,6 +57,7 @@ public class CierreFactura {
             String cSql = "SELECT w.cPatente \n"
                     + "     , DATE_FORMAT(w.dProximoCierreIni, '%d/%m/%Y')    dInicio \n"
                     + "     , DATE_FORMAT(w.dProximoCierreFin, '%d/%m/%Y')    dFin \n"
+                    + "		, w.pVehiculo \n"
                     + "     , w.nDiasNoSincro \n"
                     + "		, w.fUsuarioTitular \n"
                     + "     , u.cEmail, u.cNombre                                              cNombre \n"
@@ -71,7 +72,7 @@ public class CierreFactura {
                      * + " , IFNULL(DATE( w.tUltControl ), '0000-00-00')) dSincro \n"
                      */
                     + "     , GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "               , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dSincro \n"
+                    + "     		  , IFNULL(DATE( w.tUltControl      ), '0000-00-00'))      dSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
                     + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE nDiasAlCierreAnt = ? \n"
@@ -84,11 +85,12 @@ public class CierreFactura {
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
             // Prepara Webservice envía Push
-            CallPushService callPush = new CallPushService();
+            CallPushService callPush = new CallPushService(cnx);
 
             while (rsNotif.next()) {
             	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
+                int cVehiculo = rsNotif.getInt( "pVehiculo" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
                 String cNombre = rsNotif.getString( "cNombre" );
@@ -112,9 +114,15 @@ public class CierreFactura {
                      */
 
                 	if (nDiasNoSincro == 1) {
-                		callPush.envia( nfUsuarioTitular, "Hoy cerró tu periodo de facturación", "¡" + cPrimerNombre + ", hoy cerró tu periodo de facturación!⏰ Sincronizá para obtener tu descuento.💸", "", null, null );
+                		callPush.envia( nfUsuarioTitular,
+                				"Hoy cerró tu periodo de facturación",
+                				"¡" + cPrimerNombre + ", hoy cerró tu periodo de facturación!⏰ Sincronizá para obtener tu descuento.💸",
+                				"", null, null, 11, cVehiculo );
                 	} else if (nDiasNoSincro >= 2) {
-                		callPush.envia( nfUsuarioTitular, "Tenés días pendientes de sincronización", "¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰", "", null, null );
+                		callPush.envia( nfUsuarioTitular,
+                				"Tenés días pendientes de sincronización",
+                				"¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰",
+                				"", null, null, 11, cVehiculo );
                 	}
 
                     callMail.ejecuta( "cerro_periodo_factura", "cerro_periodo", to, mReg );

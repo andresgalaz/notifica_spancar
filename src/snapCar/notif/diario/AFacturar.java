@@ -57,13 +57,14 @@ public class AFacturar {
                 call.close();
             }
             String cSql = "SELECT w.cPatente \n"
-                    + ", w.dProximoCierreIni dInicio \n"
-                    + ", w.dProximoCierreFin dFin \n"
-                    + ", w.nDiasNoSincro \n"
-                    + ", w.fUsuarioTitular \n"
-                    + ", u.cEmail, u.cNombre \n"
+                    + "		, w.dProximoCierreIni dInicio \n"
+                    + "		, w.dProximoCierreFin dFin \n"
+                    + "		, w.nDiasNoSincro \n"
+                    + "		, w.fUsuarioTitular \n"
+                    + "		, w.pVehiculo \n"
+                    + "		, u.cEmail, u.cNombre \n"
                     + " FROM  wMemoryCierreTransf w \n"
-                    + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
+                    + " JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE w.nDiasAlCierre = ? \n"
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
@@ -73,11 +74,12 @@ public class AFacturar {
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
             // Prepara Webservie envía Push
-            CallPushService callPush = new CallPushService();
+            CallPushService callPush = new CallPushService(cnx);
 
             while (rsNotif.next()) {
             	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
+                int cVehiculo = rsNotif.getInt( "pVehiculo" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
                 String cNombre = rsNotif.getString( "cNombre" );
@@ -107,7 +109,10 @@ public class AFacturar {
                      */
 
                 	if (nDiasNoSincro > 3) {
-                		callPush.envia( nfUsuarioTitular, "Cierra tu periodo de facturación", "¡" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.", "", null, null );
+                		callPush.envia( nfUsuarioTitular,
+                				"Cierra tu periodo de facturación",
+                				"¡" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.",
+                				"", null, null, 10, cVehiculo );
                 	} else if (nDiasNoSincro >= 5) {
                 		callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
                 	} else {

@@ -30,12 +30,12 @@ public class Eventos {
 					+ "		, nVelocidadMaxima \n"
 					+ "		, nValor \n"
 					+ "		, pEvento \n"
-					+ "FROM tEvento \n"
-					+ "WHERE fTpEvento = 5 \n"
-					// + "AND nVelocidadMaxima < nValor \n"
-					+ "AND nValor > 130 \n"
-					+ "AND tModif >= DATE(fnNow() - INTERVAL 1 DAY) \n"
-					+ "AND bNotifica = 0";
+					+ "		, fVehiculo \n"
+					+ " FROM tEvento \n"
+					+ " WHERE fTpEvento = 5 \n"
+					+ " AND nValor > 130 \n"
+					+ " AND tModif >= DATE(fnNow() - INTERVAL 1 DAY) \n"
+					+ " AND bNotifica = 0";
 
 			String cUpd = "UPDATE tEvento SET bNotifica = '1' WHERE fUsuario = ? AND pEvento = ?;";
 
@@ -44,17 +44,16 @@ public class Eventos {
 			ResultSet rsNotif = psSql.executeQuery();
 
             // Prepara Webservice envía Push
-            CallPushService callPush = new CallPushService();
+            CallPushService callPush = new CallPushService(cnx);
 
             while(rsNotif.next()) {
             	int fUsuario = rsNotif.getInt( "fUsuario" );
-            	// int nVelocidadMaxima = rsNotif.getInt( "nVelocidadMaxima" );
             	int nValor = rsNotif.getInt( "nValor" );
             	int pEvento = rsNotif.getInt( "pEvento" );
+            	int fVehiculo = rsNotif.getInt( "fVehiculo" );
 
             	try {
-        			// callPush.envia( fUsuario, "¡Cuidado!", "Registramos un exceso de velocidad a ⚠️" + nValor + " km/h ⚠️ en una zona de " + nVelocidadMaxima + " km/h.", "eventos", null, pEvento );
-            		callPush.envia( fUsuario, "¡Cuidado!", "Registramos un exceso de velocidad a ⚠️" + nValor + " km/h ⚠️", "eventos", null, pEvento );
+            		callPush.envia( fUsuario, "¡Cuidado!", "Registramos un exceso de velocidad a ⚠️" + nValor + " km/h ⚠️", "eventos", null, pEvento, 13, fVehiculo );
         			psUpd.setInt( 1, fUsuario );
         			psUpd.setInt( 2, pEvento );
         			psUpd.execute();

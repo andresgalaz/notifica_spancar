@@ -35,8 +35,8 @@ import snapCar.net.CallPushService;
 public class NoSincro {
     private static Logger    logger            = Logger.getLogger( NoSincro.class );
     private Connection       cnx;
-    private static final int DIAS_AL_CIERRE_01 = 10;
-    private static final int DIAS_AL_CIERRE_02 = 20;
+    // private static final int DIAS_AL_CIERRE_01 = 10;
+    // private static final int DIAS_AL_CIERRE_02 = 20;
 
     public NoSincro(Connection cnx) {
         this.cnx = cnx;
@@ -57,34 +57,55 @@ public class NoSincro {
                 call.execute();
                 call.close();
             }
+
+            /*
             String cSql = "SELECT w.cPatente \n"
-                    + ", w.dProximoCierreIni		dInicio \n"
-                    + ", w.dProximoCierreFin		dFin \n"
-                    + ", w.nDiasNoSincro \n"
-                    + ", w.fUsuarioTitular \n"
-                    + ", u.cEmail, u.cNombre \n"
-                    + ", GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
-                    + "          , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
-                    + "          , w.dIniVigencia ) dUltSincro \n"
+                    + "		, w.dProximoCierreIni		dInicio \n"
+                    + "		, w.dProximoCierreFin		dFin \n"
+                    + "		, w.nDiasNoSincro \n"
+                    + "		, w.fUsuarioTitular \n"
+                    + "		, w.pVehiculo \n"
+                    + "		, u.cEmail, u.cNombre \n"
+                    + "		, GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
+                    + "     , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
+                    + "     , w.dIniVigencia ) dUltSincro \n"
                     + " FROM  wMemoryCierreTransf w \n"
-                    + "       JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
-                    // + " WHERE CPATENTE = 'JBH851' \n"
+                    + " JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
                     + " WHERE nDiasAlCierre in ( ?, ? ) \n"
                     + " AND   w.nDiasNoSincro > 9 "
                     + " AND   w.cPoliza is not null \n"
                     + " AND   w.bVigente = '1' \n";
+            */
+            
+            String cSql = "SELECT w.cPatente \n"
+                    + "		, w.dProximoCierreIni		dInicio \n"
+                    + "		, w.dProximoCierreFin		dFin \n"
+                    + "		, w.nDiasNoSincro \n"
+                    + "		, w.fUsuarioTitular \n"
+                    + "		, w.pVehiculo \n"
+                    + "		, u.cEmail, u.cNombre \n"
+                    + "		, GREATEST( IFNULL(DATE( w.tUltViaje        ), '0000-00-00') \n"
+                    + "     , IFNULL(DATE( w.tUltControl      ), '0000-00-00') \n"
+                    + "     , w.dIniVigencia ) dUltSincro \n"
+                    + " FROM  wMemoryCierreTransf w \n"
+                    + " JOIN tUsuario u ON u.pUsuario = w.fUsuarioTitular \n"
+                    + " WHERE cPatente = 'JBH851' \n"
+                    + " AND   w.cPoliza is not null \n"
+                    + " AND   w.bVigente = '1' \n";
+
             PreparedStatement psSql = cnx.prepareStatement( cSql );
-            psSql.setInt( 1, DIAS_AL_CIERRE_01 );
-            psSql.setInt( 2, DIAS_AL_CIERRE_02 );
+            // psSql.setInt( 1, DIAS_AL_CIERRE_01 );
+            // psSql.setInt( 2, DIAS_AL_CIERRE_02 );
             ResultSet rsNotif = psSql.executeQuery();
             // Prepara Webservice envía Mails
             CallWsMail callMail = new CallWsMail();
             // Prepara Webservie envía Push
-            CallPushService callPush = new CallPushService();
+            CallPushService callPush = new CallPushService(cnx);
     
             while (rsNotif.next()) {
             	int nfUsuarioTitular = rsNotif.getInt( "fUsuarioTitular" );
                 int nDiasNoSincro = rsNotif.getInt( "nDiasNoSincro" );
+                int cVehiculo = rsNotif.getInt( "pVehiculo" );
                 String cPatente = rsNotif.getString( "cPatente" );
                 String cEmail = rsNotif.getString( "cEmail" );
                 String cNombre = rsNotif.getString( "cNombre" );
@@ -117,7 +138,10 @@ public class NoSincro {
                      */
 
                     if (nDiasNoSincro > 3)
-                    	callPush.envia( nfUsuarioTitular, "¡Sincronizá tu viajes!", "¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días! Hacelo para conseguir tu descuento.", "", null, null );
+                    	callPush.envia( nfUsuarioTitular,
+                    			"¡Sincronizá tu viajes!",
+                    			"¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días! Hacelo para conseguir tu descuento.",
+                    			"", null, null, 12, cVehiculo );
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }

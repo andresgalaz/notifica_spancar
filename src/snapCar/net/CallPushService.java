@@ -7,6 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -16,11 +19,17 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import prg.glz.FrameworkException;
 import prg.util.cnv.ConvertJSON;
+import snapCar.notif.Principal;
 
 public class CallPushService {
     private static final String URL_API = "https://us-central1-snapcar-api.cloudfunctions.net/pushService";
+    private static Logger logger = Logger.getLogger( Principal.class );
 
     static {
         TrustManager[] trustAllCertificates = new TrustManager[] {
@@ -48,8 +57,11 @@ public class CallPushService {
         }
     }
 
-    public CallPushService() throws FrameworkException {
+	private Connection cnx;
+
+    public CallPushService(Connection cnx) throws FrameworkException {
         TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
+        this.cnx = cnx;
         // Permite usar HTTPS sin bajar el certificado localmente
     }
 
@@ -64,11 +76,13 @@ public class CallPushService {
      * <li>cPantalla: opcional</li>
      * <li>nIdViaje: opcional</li>
      * <li>nIdEvento: opcional</li>
+     * <li>fTpNotificacion: opcional</li>
+     * <li>pVehiculo: opcional</li>
      * </ul>
      * 
      * @throws FrameworkException
      */
-    public String envia(Integer nIdUsuario, String cTitulo, String cMensaje, String cPantalla, Integer nIdViaje, Integer nIdEvento) throws FrameworkException {
+    public String envia(Integer nIdUsuario, String cTitulo, String cMensaje, String cPantalla, Integer nIdViaje, Integer nIdEvento, Integer fTpNotificacion, Integer pVehiculo) throws FrameworkException {
         Map<String, Object> mParams = new HashMap<String, Object>();
         mParams.put( "id", nIdUsuario );
         mParams.put( "titulo", cTitulo );
@@ -76,7 +90,33 @@ public class CallPushService {
         mParams.put( "screen", cPantalla );
         mParams.put( "idViaje", nIdViaje );
         mParams.put( "idEvento", nIdEvento );
-        return ejecutaString( URL_API, "POST", mParams );
+        String sResp = ejecutaString( URL_API, "POST", mParams );
+
+        String cSql = "INSERT INTO score.tNotificacion (cMensaje, fTpNotificacion, tEnviado) VALUES (?, ?, now())";
+
+        try {
+			PreparedStatement psSql = cnx.prepareStatement(cSql);
+
+			Map<String, Object> mMensaje = new HashMap<String, Object>();
+			mMensaje.put( "vehiculo", pVehiculo );
+			mMensaje.put( "mensaje", cMensaje );
+
+			String mSqlMensaje;
+	        try {
+	        	mSqlMensaje = ConvertJSON.MapToString( mMensaje );
+	        } catch (JsonProcessingException e) {
+	        	mSqlMensaje = mMensaje.toString();
+	        }
+
+			psSql.setString( 1, mSqlMensaje );
+			psSql.setInt( 2, fTpNotificacion );
+			psSql.execute();
+			cnx.commit();
+		} catch (SQLException e) {
+			logger.warn( "Error al intentar insertar registro de notificación:" + e.getMessage(), e );
+		}
+
+        return sResp;
     }
 
     private String ejecutaString(String cUrl, String cMetodo, Map<String, Object> mParams) throws FrameworkException {
