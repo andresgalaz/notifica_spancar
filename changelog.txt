@@ -1,9 +1,16 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+<<<<<<< HEAD
 = v00007j =
 @ 06/06/2018
 * Se agregó bitácora para los envíos de push notification.
+=======
+= v00008a =
+@ 31/05/2018 - RSOBRERO
+ * Notificaciones asociadas a los MAIL y se agrega clase
+ 	snapCar.notif.continuo.Eventos
+>>>>>>> 2473c9bf8272b00826e8ef1bf7009bb104197009
 
 = v00007h =
 @ 09/05/2018 - AGALAZ

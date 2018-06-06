@@ -7,7 +7,7 @@
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
     <property name="dir.jarfile" value="${dir.buildfile}"/>
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/notifica_0.7h.jar">
+        <jar destfile="${dir.jarfile}/notifica_0.8a.jar">
             <manifest>
                 <attribute name="Main-Class" value="snapCar.notif.Principal"/>
                 <attribute name="Class-Path" value=". lib/log4j-1.2.13.jar lib/mysql-connector-java-5.1.23.jar lib/joda-time-2.9.9.jar lib/commons-codec-20041127.091804.jar lib/commons-lang-2.4.jar lib/hibernate-jpa-2.1-api-1.0.0.Final.jar lib/jackson-annotations-2.8.5.jar lib/jackson-core-2.8.5.jar lib/jackson-databind-2.8.5.jar lib/jackson-dataformat-xml-2.8.5.jar lib/activation-1.1.1.jar lib/mail-1.4.7.jar lib/fop-transcoder-allinone-2.2.jar lib/batik-all-1.9.jar lib/xmlgraphics-commons-2.2.jar lib/xml-apis-ext-1.3.04.jar lib/clienteWsIntegrityRun.jar lib/log4j-1.2.13.jar lib/jackson-annotations-2.8.5.jar lib/jackson-core-2.8.5.jar lib/jackson-databind-2.8.5.jar lib/jackson-dataformat-xml-2.8.5.jar lib/mysql-connector-java-5.1.23.jar lib/commons-lang-2.4.jar lib/hibernate-jpa-2.1-api-1.0.0.Final.jar lib/commons-codec-20041127.091804.jar lib/stax2-api-4.0.0.jar lib/aws-java-sdk-s3-1.11.180.jar lib/aws-java-sdk-core-1.11.180.jar lib/aws-java-sdk-1.11.180.jar lib/httpclient-4.5.3.jar lib/httpcore-4.4.6.jar lib/joda-time-2.9.9.jar lib/utilFrmwk_4.0a.jar lib/utilFrmwk_4.0a.jar"/>
