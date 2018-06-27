@@ -102,12 +102,23 @@ public class AFacturar {
                 try {
                     /** 
                      * Envía push notification cuando el usuario
-                     * no sincroniza hace más de 3 días y su perdiodo
+                     * no sincroniza hace más de 5 días y su perdiodo
                      * de facturación cierra en 2 días.
                      * @author Rodrigo Sobrero
-                     * @since 2018-05-17
+                     * @since 2018-06-27
                      */
 
+                	if (nDiasNoSincro >= 5) {
+                		callPush.envia( nfUsuarioTitular,
+                				"Cierra tu periodo de facturación",
+                				"¡" + cPrimerNombre + ", en dos días cierra tu periodo de facturación! No te olvides de sincronizar.",
+                				"", null, null, 10, cVehiculo );
+                		callMail.ejecuta( "a_facturar_01", "facturar_1", to, mReg );
+                	} else {
+                		callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
+                	}
+                	
+                	/*
                 	if (nDiasNoSincro > 3) {
                 		callPush.envia( nfUsuarioTitular,
                 				"Cierra tu periodo de facturación",
@@ -118,6 +129,7 @@ public class AFacturar {
                 	} else {
                 		callMail.ejecuta( "a_facturar_02", "facturar_2", to, mReg );
                 	}
+                	*/
                 } catch (FrameworkException e) {
                     logger.error( "Al enviar mail a " + cEmail + "por la patente " + cPatente, e );
                 }

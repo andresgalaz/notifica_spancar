@@ -114,12 +114,12 @@ public class NoSincro {
 
                     /** 
                      * Envía push notification cuando el usuario
-                     * no sincroniza hace más de 3 días.
+                     * no sincroniza hace más de 5 días.
                      * @author Rodrigo Sobrero
-                     * @since 2018-05-16
+                     * @since 2018-06-27
                      */
 
-                    if (nDiasNoSincro > 3)
+                    if (nDiasNoSincro > 5)
                     	callPush.envia( nfUsuarioTitular,
                     			"¡Sincronizá tu viajes!",
                     			"¡" + cPrimerNombre + ", no sincronizas hace " + nDiasNoSincro + " días! Hacelo para conseguir tu descuento.",

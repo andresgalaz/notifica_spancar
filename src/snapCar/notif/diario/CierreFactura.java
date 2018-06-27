@@ -108,11 +108,19 @@ public class CierreFactura {
                 try {
                     /** 
                      * Envía push notification cuando al usuario
-                     * le cerró el periodo y no sincronizó.
+                     * le cerró el periodo y no sincronizó hace más de 1 día.
                      * @author Rodrigo Sobrero
-                     * @since 2018-05-17
+                     * @since 2018-06-27
                      */
 
+                	if (nDiasNoSincro > 1) {
+                		callPush.envia( nfUsuarioTitular,
+                				"Tenés días pendientes de sincronización",
+                				"¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰",
+                				"", null, null, 11, cVehiculo );
+                	}
+
+                	/*
                 	if (nDiasNoSincro == 1) {
                 		callPush.envia( nfUsuarioTitular,
                 				"Hoy cerró tu periodo de facturación",
@@ -124,6 +132,7 @@ public class CierreFactura {
                 				"¡" + cPrimerNombre + ", sincronizá para obtener tu descuento!💸 Todavía hay días pendientes.⏰",
                 				"", null, null, 11, cVehiculo );
                 	}
+                	*/
 
                     callMail.ejecuta( "cerro_periodo_factura", "cerro_periodo", to, mReg );
                 } catch (FrameworkException e) {
