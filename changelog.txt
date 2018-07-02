@@ -3,7 +3,8 @@
 
 = v00008d =
 @ 02/07/2018
-* Nueva notificación poliza_renovacion
+* Nueva notificación poliza_renovacionm se crea clase 
+  CalcAhorro
 
 = v00008c =
 @ 06/06/2018
