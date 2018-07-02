@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import prg.glz.FrameworkException;
+import snapCar.factura.CalcAhorro;
 import snapCar.net.CallWsMail;
 import snapCar.notif.config.Parametro;
 import snapCar.util.utilHttp;
@@ -46,14 +47,22 @@ public class Poliza {
 
         // Armado cursor que detecta los vehículos a facturar
         String cSql = " SELECT v.pVehiculo, v.cPatente, u.cNombre, u.cEmail \n"
+                // + "          , m.FECHA_EMISION dEmision \n"
+                // bAntiguo: Indica si la póliza es vieja, cuando al menos pasarson 200 días
+                // desde la vigencia y vuelve a aparecer con bPdfPoliza='0', los 200 días
+                // es un parámetro a evaluar todavía
+                + "          , (datediff( fnNow(), v.dIniVigencia ) > 200) bAntiguo \n"
                 + " FROM  tVehiculo v \n"
                 + "       JOIN tUsuario u ON u.pUsuario = v.fUsuarioTitular \n"
-                + "       LEFT JOIN integrity.tMovim m ON m.pMovim = v.fMovimCreacion \n"
+                // + "       LEFT JOIN integrity.tMovim m ON m.pMovim = v.fMovimCreacion \n"
                 + " WHERE v.bPdfPoliza = '0' \n"
                 + " AND   IFNULL(v.cPoliza,'TEST') <> 'TEST' \n"
                 + " AND   v.bVigente = '1' \n";
         PreparedStatement psSql = cnx.prepareStatement( cSql );
         ResultSet rs = psSql.executeQuery();
+
+        // Para calcular el ahorro
+        CalcAhorro calcAhorro = new CalcAhorro( this.cnx );
 
         // Prepara Webservice envía Mails
         CallWsMail callMail = new CallWsMail();
@@ -68,6 +77,7 @@ public class Poliza {
             Integer pVehiculo = rs.getInt( "pVehiculo" );
             String cEmail = rs.getString( "cEmail" );
             String cNombre = utilHttp.primerNombre( rs.getString( "cNombre" ) );
+            boolean bAntiguo = rs.getBoolean( "bAntiguo" );
 
             List<Map> to = callMail.createAddressTo( cNombre, cEmail );
             Map<String, String> mReg = new HashMap<String, String>();
@@ -77,7 +87,16 @@ public class Poliza {
             mReg.put( "cNombre", cNombre );
             mReg.put( "cLinkPoliza", cLinkPoliza );
             mReg.put( "subject", "Póliza SnapCar Integrity Vehículo " + cPatente );
-            callMail.ejecuta( "poliza", "poliza", to, mReg );
+
+            if (bAntiguo) {
+                // Calcula ahorro
+                calcAhorro.procesa( cPatente, null );
+                // Introduce los valores de ahorro y premio a mVal
+                mReg.put( "nAhorroAcumulado", utilHttp.separaMiles( calcAhorro.getnAhorroAcum() ) );
+
+                callMail.ejecuta( "poliza_renovacion", "poliza", to, mReg );
+            } else
+                callMail.ejecuta( "poliza", "poliza", to, mReg );
 
             // Actualiza tVehiculo.bPdfCobertura, para no volver a enviar
             psUpd.setInt( 1, pVehiculo );
@@ -89,6 +108,8 @@ public class Poliza {
         rs.close();
         psSql.close();
         psUpd.close();
+        calcAhorro.close();
+
     }
 
 }

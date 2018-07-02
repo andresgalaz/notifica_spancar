@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +37,7 @@ import prg.util.cnv.ConvertFile;
 import prg.util.cnv.ConvertMap;
 import prg.util.cnv.ConvertNumber;
 import snapCar.amazon.UploadFile;
+import snapCar.factura.CalcAhorro;
 import snapCar.net.CallWsMail;
 import snapCar.notif.config.Parametro;
 import snapCar.util.utilHttp;
@@ -66,7 +68,7 @@ public class EndosoFactura {
         SimpleDateFormat fmtLargo = new SimpleDateFormat( "EEEE d 'de' MMMM 'de' YYYY " );
         SimpleDateFormat fmtSimple = new SimpleDateFormat( "dd/MM/YYYY" );
         SimpleDateFormat fmtPeriodo = new SimpleDateFormat( "YYYYMM" );
-
+        
         UploadFile upFile = new UploadFile( Parametro.get( "bucketServer" ), Parametro.get( "bucketName" ) //
                 , Parametro.get( "bucketAccessKey" ), Parametro.get( "bucketSecretKey" ) );
         String remotePath = Parametro.get( "bucketPath" );
@@ -76,15 +78,8 @@ public class EndosoFactura {
         String cFacturaSVG = utilHttp.read( Parametro.get( "factura_svg" ) );
 
         try {
+            CalcAhorro calcAhorro = new CalcAhorro( this.cnx );
 
-            String cSqlAhorro = "SELECT ROUND(nDescuento) nDescuento\n"
-                    + " , ROUND(nPrima)  nPrima , ROUND(nPrimaSD)  nPrimaSD \n"
-                    + " , ROUND(nPremio) nPremio, ROUND(nPremioSD) nPremioSD \n"
-                    + " FROM  vFacturaProrroga \n"
-                    + " WHERE cPatente = ? \n"
-                    + " AND   dInicio <= ? \n"
-                    + " ORDER BY dEmision \n";
-            PreparedStatement psAhorro = cnx.prepareStatement( cSqlAhorro );
             PreparedStatement psUpd = cnx.prepareStatement( "UPDATE integrity.tMovim SET bPdfProrroga = '1' WHERE pMovim = ?" );
 
             String cSqlPpal = "SELECT \n"
@@ -136,7 +131,7 @@ public class EndosoFactura {
                 int pMovim = (int) mVal.get( "pMovim" );
                 // Patente y Periodo
                 String cPatente = (String) mVal.get( "cPatente" );
-                Object dInicioVig = ConvertDate.toSqlDate( mVal.get( "dInicioVig" ));
+                Date dInicioVig = ConvertDate.toSqlDate( mVal.get( "dInicioVig" ));
                 // Recupera Email a enviar
                 String cEmail = (String) mVal.get( "cEmail" );
                 String cNombre = (String) mVal.get( "cNombre" );
@@ -147,51 +142,17 @@ public class EndosoFactura {
                 mVal.put( "nDNI", utilHttp.separaMiles( mVal.get( "nDNI" ) ) );
                 mVal.put( "nSumaAsegurada", utilHttp.separaMiles( mVal.get( "nSumaAsegurada" ) ) );
 
-                /* AHORRO */
-                psAhorro.setString( 1, cPatente );
-                psAhorro.setObject( 2, dInicioVig );
-                ResultSet rsAhorro = psAhorro.executeQuery();
-                int nDescuento = 0;
-                int nAhorro = 0;
-                int nAhorroAcum = 0;
-                // int nPrima = 0;
-                // int nPrimaSD = 0;
-                int nPremio = 0;
-                int nPremioSD = 0;
-                while (rsAhorro.next()) {
-                    // Se leen todos pero solo interesa mantener la última fila
-                    nDescuento = rsAhorro.getInt( "nDescuento" );
-                    // nPrima = rsAhorro.getInt( "nPrima" );
-                    nPremio = rsAhorro.getInt( "nPremio" );
-                    if (nDescuento == 0) {
-                        // nPrimaSD = nPrima;
-                        nPremioSD = nPremio;
-                        nAhorro = 0;
-                    } else {
-                        // nPrimaSD = rsAhorro.getInt( "nPrimaSD" );
-                        nPremioSD = rsAhorro.getInt( "nPremioSD" );
-                        nAhorro = nPremioSD - nPremio;
-                    }
-                    nAhorroAcum += nAhorro;
-                }
-                rsAhorro.close();
-                // Valores para forzar el descuento al premio y no la prima
-                int nImpuestoAhorro = 0;
-                int nAhorroBruto = 0;
-                if (nDescuento != 0) {
-                    // Esto es para mostrar el descuento como si fuera en el premio ( y no la prima técnica como en
-                    // realida es ). Es una ocurrencia de Bruno.
-                    nAhorroBruto = (int) Math.round( nPremioSD * nDescuento / 100.0 );
-                    // Esto no tiene ningún sentido, pero Bruno insiste
-                    nImpuestoAhorro = nAhorro - nAhorroBruto;
-                }
+                // Calcula ahorro a la fecha 
+                calcAhorro.procesa( cPatente, dInicioVig );
+
                 // Introduce los valores de ahorro y premio a mVal
-                mVal.put( "nAhorro", utilHttp.separaMiles( nAhorro ) );
-                mVal.put( "nAhorroAcumulado", utilHttp.separaMiles( nAhorroAcum ) );
-                mVal.put( "nPremio", utilHttp.separaMiles( nPremio ) );
-                mVal.put( "nPremioSD", utilHttp.separaMiles( nPremioSD ) );
-                mVal.put( "nAhorroBruto", utilHttp.separaMiles( nAhorroBruto ) );
-                mVal.put( "nImpuestoAhorro", utilHttp.separaMiles( nImpuestoAhorro ) );
+                mVal.put( "nAhorro", utilHttp.separaMiles( calcAhorro.getnAhorro() ) );
+                mVal.put( "nAhorroAcumulado", utilHttp.separaMiles( calcAhorro.getnAhorroAcum() ) );
+                mVal.put( "nPremio", utilHttp.separaMiles( calcAhorro.getnPremio() ) );
+                mVal.put( "nPremioSD", utilHttp.separaMiles( calcAhorro.getnPremioSD() ) );
+                mVal.put( "nAhorroBruto", utilHttp.separaMiles( calcAhorro.getnAhorroBruto() ) );
+                mVal.put( "nImpuestoAhorro", utilHttp.separaMiles( calcAhorro.getnImpuestoAhorro() ) );
+                
                 // Arma PDF, lo sube a S3 y envía el MAIL
                 List<Map> to = callMail.createAddressTo( cNombre, cEmail );
                 String cPeriodoFact = fmtPeriodo.format( ConvertDate.toDate( mVal.get( "dInicioVig" ) ) );
@@ -214,7 +175,7 @@ public class EndosoFactura {
                     mValMail.put( "cFecFin", mVal.get( "cFecFin" ) );
                     mValMail.put( "cFecFinLarga", fmtLargo.format( mVal.get( "dFin" ) ) );
                     mValMail.put( "nDescuento", mVal.get( "nDescuento" ) );
-                    mValMail.put( "nAhorro", nAhorro );
+                    mValMail.put( "nAhorro", calcAhorro.getnAhorro() );
                     mValMail.put( "cVehiculo", mVal.get( "cVehiculo" ) );
 
                     try {
@@ -236,13 +197,13 @@ public class EndosoFactura {
                             // callMail.ejecuta( "prorroga_10_90b", "prorroga", to, mValMail );
                             // callMail.ejecuta( "prorroga_recargo", "prorroga", to, mValMail );
 
-                            if (nDiasSinMedicion >= 15 && nDescuento <= 0 ) {
+                            if (nDiasSinMedicion >= 15 && calcAhorro.getnDescuento() <= 0 ) {
                                 // Descuento 0 sin sincronización
                                 callMail.ejecuta( "prorroga_noSync", "prorroga", to, mValMail );
-                            } else if (nDescuento > 10) {
+                            } else if (calcAhorro.getnDescuento() > 10) {
                                 // Descuento entre 10 y 40
                                 callMail.ejecuta( "prorroga_10_40", "prorroga", to, mValMail );
-                            } else if (nDescuento >= 0) {
+                            } else if (calcAhorro.getnDescuento() >= 0) {
                                 // Descuento entre 0 y 10
                                 if (nScore > 90)
                                     callMail.ejecuta( "prorroga_10_90a", "prorroga", to, mValMail );
@@ -268,7 +229,7 @@ public class EndosoFactura {
             rsNotif.close();
             psSql.close();
             psUpd.close();
-            psAhorro.close();
+            calcAhorro.close();
 
         } catch (ConvertException e) {
             logger.error( "Al convertir fechas", e );

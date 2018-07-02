@@ -144,6 +144,15 @@ public class Principal {
 
     private static void callContinuo(ConexionHelper cnxHlp) {
         try {
+            Poliza notif = new Poliza( cnxHlp.getConnection() );
+            notif.procesa();
+            cnxHlp.getConnection().commit();
+        } catch (Exception e) {
+            rollback( cnxHlp );
+            logger.error( "Al procesar notificaciones de pólizas nuevas", e );
+        }
+
+        try {
             EndosoFactura notif = new EndosoFactura( cnxHlp.getConnection() );
             notif.procesa();
             cnxHlp.getConnection().commit();
@@ -160,16 +169,7 @@ public class Principal {
             rollback( cnxHlp );
             logger.error( "Al procesar notificaciones de certificados de cobertura", e );
         }
-
-        try {
-            Poliza notif = new Poliza( cnxHlp.getConnection() );
-            notif.procesa();
-            cnxHlp.getConnection().commit();
-        } catch (Exception e) {
-            rollback( cnxHlp );
-            logger.error( "Al procesar notificaciones de pólizas nuevas", e );
-        }
-
+        
         /** 
          * Envía push notification cuando el usuario
          * tiene evento de exceso de velocidad.

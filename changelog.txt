@@ -1,6 +1,10 @@
 = Pendiente
  * Agregar los mensajes que faltan
 
+= v00008d =
+@ 02/07/2018
+* Nueva notificación poliza_renovacion
+
 = v00008c =
 @ 06/06/2018
 * Se modificó condicionales del envío de los push notification.
